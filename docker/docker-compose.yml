@@ -11,7 +11,8 @@ services:
     volumes:
       - dbvolume:/var/lib/mysql
   codedefenders:
-    image: "codedefenders/codedefenders:${CODEDEFENDERS_VERSION:?Please set a Codedefenders version via the .env file. Also see docs/Docker.md for more information.}"
+    #image: "codedefenders/codedefenders:${CODEDEFENDERS_VERSION:?Please set a Codedefenders version via the .env file. Also see docs/Docker.md for more information.}"
+    image: "codedefenders/codedefenders:dev"
     environment:
       # These three are hardcoded because they are part of the container setup
       - CODEDEFENDERS_DATA_DIR=/srv/codedefenders

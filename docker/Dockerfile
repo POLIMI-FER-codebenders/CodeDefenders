@@ -3,8 +3,11 @@ RUN mkdir /Codedefenders/
 WORKDIR /Codedefenders/
 COPY ./local-repo ./local-repo/
 COPY pom.xml .
+COPY ./package.json .
+COPY ./rollup.config.js .
 # Download dependencies before copying the source code as the dependencies don't change that often
 RUN mvn dependency:go-offline
+COPY ./.git ./.git
 COPY ./src ./src/
 RUN mvn package -DskipTests -DskipCheckstyle
 
