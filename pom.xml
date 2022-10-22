@@ -147,7 +147,6 @@
 						</goals>
 						<phase>initialize</phase>
 						<configuration>
-							<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
 							<generateGitPropertiesFile>true</generateGitPropertiesFile>
 							<generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
 							</generateGitPropertiesFilename>
