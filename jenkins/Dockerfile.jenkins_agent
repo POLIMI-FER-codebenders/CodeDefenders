@@ -1,6 +1,5 @@
 FROM eclipse-temurin:8-jdk
 
-
 RUN apt-get update \
     && apt-get install -y git \
     && rm -rf /var/lib/apt/lists/*
@@ -20,8 +19,8 @@ RUN mkdir -p /usr/share/maven /usr/share/maven/ref \
 ENV MAVEN_HOME /usr/share/maven
 ENV MAVEN_CONFIG "$USER_HOME_DIR/.m2"
 
-COPY mvn-entrypoint.sh /usr/local/bin/mvn-entrypoint.sh
-COPY settings-docker.xml /usr/share/maven/ref/
+COPY jenkins/mvn-entrypoint.sh /usr/local/bin/mvn-entrypoint.sh
+COPY jenkins/settings-docker.xml /usr/share/maven/ref/
 
 # Add nodejs 
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash \
