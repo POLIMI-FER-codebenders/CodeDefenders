@@ -1,7 +1,5 @@
 FROM eclipse-temurin:8-jdk
 
-# Hope this doesn't break anything
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
 RUN apt-get update \
     && apt-get install -y git \
@@ -27,7 +25,7 @@ COPY settings-docker.xml /usr/share/maven/ref/
 
 # Add nodejs 
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash \
-  && source ~/.bashrc \
+  && export NVM_DIR="$HOME/.nvm"
   && nvm install v16.17.1 \
   && node -v \
   && npm -v
