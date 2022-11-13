@@ -26,7 +26,7 @@ COPY settings-docker.xml /usr/share/maven/ref/
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash \
   && source ~/.bashrc \
   && nvm install v16.17.1 \
-  && node -v
+  && node -v \
   && npm -v
 
 
