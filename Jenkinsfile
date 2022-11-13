@@ -2,7 +2,7 @@ pipeline {
     agent {
         // Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 ./build/
         dockerfile {
-            filename 'Dockerfile.jenkins_agent'
+            image 'maven:3.8-openjdk-11'
             //dir 'jenkins'
             //label 'my-defined-label'
             args '-v /root/.m2:/root/.m2' 
@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('Run tests') { 
             steps {
-                sh 'mvn clean install' 
+                sh 'mvn test' 
             }
         }
     }
