@@ -4,7 +4,7 @@ pipeline {
         dockerfile {
             filename 'Dockerfile.jenkins_agent'
             //dir 'build'
-            label 'my-defined-label'
+            //label 'my-defined-label'
             args '-v /root/.m2:/root/.m2' 
         }
     }
