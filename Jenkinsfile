@@ -1,19 +1,25 @@
-
 pipeline {
     agent {
         // Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 ./build/
         dockerfile {
             filename 'Dockerfile.jenkins_agent'
             //dir 'build'
-            //label 'my-defined-label'
-            args '-v /root/.m2:/root/.m2' 
+            args '-v /root/.m2:/root/.m2'
         }
+    }
+    environment {
+       CI = 'false'
     }
     stages {
         stage('Run tests') { 
+            environment {
+                CI = 'false'
+            }
             steps {
-                sh 'mvn test' 
+                sh 'npm -v'
+                sh 'mvn -X test'
             }
         }
     }
 }
+
