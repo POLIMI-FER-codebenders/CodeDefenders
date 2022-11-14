@@ -8,9 +8,13 @@ pipeline {
             args '-v /root/.m2:/root/.m2' 
         }
     }
+    environment {
+       CI = 'false'
+    }
     stages {
         stage('Run tests') { 
             steps {
+                env.CI = false
                 sh 'mvn -v'
                 sh 'mvn -X test' 
             }
