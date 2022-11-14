@@ -13,8 +13,10 @@ pipeline {
     }
     stages {
         stage('Run tests') { 
+            environment {
+                CI = 'false'
+            }
             steps {
-                env.CI = false
                 sh 'mvn -v'
                 sh 'mvn -X test' 
             }
