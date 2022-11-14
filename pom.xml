@@ -175,7 +175,7 @@
 				</executions>
 			</plugin>
 
-			<!-- <!\-\- Builds and bundles JavaScript \-\->
+			<!-- Builds and bundles JavaScript -->
 			<plugin>
 				<groupId>com.github.eirslett</groupId>
 				<artifactId>frontend-maven-plugin</artifactId>
@@ -210,7 +210,7 @@
 						<phase>compile</phase>
 					</execution>
 				</executions>
-			</plugin> -->
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -554,18 +554,14 @@
 					<version>0.8.7</version>
 				</plugin>
 
-				<!--<plugin>
+				<plugin>
 					<groupId>com.github.eirslett</groupId>
 					<artifactId>frontend-maven-plugin</artifactId>
 					<version>1.12.1</version>
 					<configuration>
 						<nodeVersion>v16.17.1</nodeVersion>
-						<environmentVariables>
-        					<!\-\- Simple var \-\->
-        					<CI>false</CI>
-    					</environmentVariables>  
 					</configuration>
-				</plugin> -->
+				</plugin>
 
 				<plugin>
 					<groupId>pl.project13.maven</groupId>
