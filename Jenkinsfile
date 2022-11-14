@@ -1,17 +1,11 @@
 pipeline {
     agent {
         // Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 ./build/
-        docker {
-            dockerfile ''
-            //dir 'jenkins'
-            //label 'my-defined-label'
-            
-        }
         dockerfile {
-        filename 'Dockerfile.jenkins_agent'
-        //dir 'build'
-        args '-v /root/.m2:/root/.m2'
-    }
+            filename 'Dockerfile.jenkins_agent'
+            //dir 'build'
+            args '-v /root/.m2:/root/.m2'
+        }
     }
     environment {
        CI = 'false'
