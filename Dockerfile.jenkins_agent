@@ -25,4 +25,4 @@ COPY ./.git ./.git/
 COPY package.json .
 COPY rollup.config.js .
 COPY checkstyle-codedefenders.xml .
-RUN mvn package -DskipTests -DskipCheckstyle
+RUN mvn test
