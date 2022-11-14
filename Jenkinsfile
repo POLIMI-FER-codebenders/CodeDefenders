@@ -2,10 +2,10 @@ pipeline {
     agent {
         // Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 ./build/
         docker {
-            image 'docker:dind'
+            image 'maven:3.6.3-openjdk-11'
             //dir 'jenkins'
             //label 'my-defined-label'
-            //args '-v /root/.m2:/root/.m2' 
+            args '-v /root/.m2:/root/.m2' 
         }
     }
     environment {
@@ -17,7 +17,7 @@ pipeline {
                 CI = 'false'
             }
             steps {
-                sh 'docker build --file ./docker/Dockerfile --tag codedefenders/codedefenders:dev .'
+                sh 'mvn -X test'
             }
         }
     }
