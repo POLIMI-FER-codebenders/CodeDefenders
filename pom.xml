@@ -191,7 +191,7 @@
 					<execution>
 						<id>npm install</id>
 						<goals>
-							<goal>npm</goal>
+							<goal>CI=false npm</goal>
 						</goals>
 						<configuration>
 							<arguments>install</arguments>
@@ -202,7 +202,7 @@
 					<execution>
 						<id>npm run bundle</id>
 						<goals>
-							<goal>npm</goal>
+							<goal>CI=false npm</goal>
 						</goals>
 						<configuration>
 							<arguments>run bundle</arguments>
