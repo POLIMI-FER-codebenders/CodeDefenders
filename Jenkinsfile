@@ -4,7 +4,6 @@ pipeline {
         dockerfile {
             filename 'Dockerfile.jenkins_agent'
             //dir 'build'
-            dir '.'
             args '-v /root/.m2:/root/.m2'
         }
     }
