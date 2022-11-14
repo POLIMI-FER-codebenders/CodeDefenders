@@ -4,7 +4,7 @@
     "description": "",
     "main": "",
     "scripts": {
-        "bundle": "CI= rollup -c"
+        "bundle": "CI=false && rollup -c"
     },
     "author": "",
     "license": "ISC",
