@@ -17,7 +17,7 @@ pipeline {
                 CI = 'false'
             }
             steps {
-                sh 'ls'
+                sh 'mvn test'
             }
         }
     }
