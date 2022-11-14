@@ -191,7 +191,7 @@
 					<execution>
 						<id>npm install</id>
 						<goals>
-							<goal>CI=false npm</goal>
+							<goal>npm</goal>
 						</goals>
 						<configuration>
 							<arguments>install</arguments>
@@ -202,7 +202,7 @@
 					<execution>
 						<id>npm run bundle</id>
 						<goals>
-							<goal>CI=false npm</goal>
+							<goal>npm</goal>
 						</goals>
 						<configuration>
 							<arguments>run bundle</arguments>
@@ -560,7 +560,10 @@
 					<version>1.12.1</version>
 					<configuration>
 						<nodeVersion>v16.17.1</nodeVersion>
-						<npmVersion>8.15.0</npmVersion>
+						<environmentVariables>
+        					<!-- Simple var -->
+        					<CI>false</CI>
+    					</environmentVariables>  
 					</configuration>
 				</plugin>
 
