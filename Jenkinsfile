@@ -18,7 +18,7 @@ pipeline {
             }
             steps {
                 sh 'mvn -v'
-                sh 'mvn -X test' 
+                sh 'sudo mvn -X test' 
             }
         }
     }
