@@ -2,10 +2,10 @@ pipeline {
     agent {
         // Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 ./build/
         docker {
-            image 'maven:3.6.3-openjdk-11'
+            image 'docker:dind'
             //dir 'jenkins'
             //label 'my-defined-label'
-            args '-v /root/.m2:/root/.m2' 
+            //args '-v /root/.m2:/root/.m2' 
         }
     }
     environment {
