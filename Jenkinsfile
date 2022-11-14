@@ -17,10 +17,7 @@ pipeline {
                 CI = 'false'
             }
             steps {
-                sh 'mvn -v'
-                sh 'npm -v'
-                sh 'node -v'
-                sh 'sudo mvn -X test' 
+                sh 'ls'
             }
         }
     }
