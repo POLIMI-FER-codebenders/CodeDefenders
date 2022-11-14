@@ -17,7 +17,7 @@ pipeline {
                 CI = 'false'
             }
             steps {
-                sh 'mvn -X clean install'
+                sh 'docker build --file ./docker/Dockerfile --tag codedefenders/codedefenders:dev .'
             }
         }
     }
