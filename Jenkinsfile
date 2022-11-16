@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('Build') { 
             steps {
-                sh 'mvn test' 
+                sh 'mvn -X test' 
             }
         }
     }
