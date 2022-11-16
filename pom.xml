@@ -17,11 +17,11 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 
-		<skipCheckstyle>true</skipCheckstyle>
-		<skipTests>true</skipTests>
+		<skipCheckstyle>false</skipCheckstyle>
+		<skipTests>false</skipTests>
 		<skipFrontend>false</skipFrontend>
-		<skipUnitTests>true</skipUnitTests>
-		<skipIntegrationTests>true</skipIntegrationTests>
+		<skipUnitTests>${skipTests}</skipUnitTests>
+		<skipIntegrationTests>${skipTests}</skipIntegrationTests>
 		<checkstyle.skip>${skipCheckstyle}</checkstyle.skip>
 		<skip.npm>${skipFrontend}</skip.npm>
 	</properties>
@@ -554,7 +554,7 @@
 					<version>0.8.7</version>
 				</plugin>
 
-				<!--<plugin>
+				<plugin>
 					<groupId>com.github.eirslett</groupId>
 					<artifactId>frontend-maven-plugin</artifactId>
 					<version>1.12.1</version>
@@ -562,7 +562,7 @@
 						<nodeVersion>v16.17.1</nodeVersion>
     					<npmVersion>8.15.0</npmVersion>
 					</configuration>
-				</plugin>-->
+				</plugin>
 
 				<plugin>
 					<groupId>pl.project13.maven</groupId>
