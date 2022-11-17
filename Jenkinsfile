@@ -21,10 +21,10 @@ pipeline {
             agent any
             steps {
                 sh 'ls'
-                echo "Running commit: ${env.GIT_COMMIT}"
-                //sh 'docker build --file ./docker/Dockerfile.deploy --tag codedefenders/codedefenders:dev .'
+                //echo "Running commit: ${env.GIT_COMMIT}"
+                sh "docker build --file ./docker/Dockerfile.deploy --tag codedefenders/codedefenders:${env.GIT_COMMIT} ."
                 //sh 'docker build -f docker/Dockerfile .'
-                //sh 'docker image ls'
+                sh 'docker image ls'
             }
         }
     }
