@@ -20,7 +20,7 @@ pipeline {
         stage('Docker build') { 
             agent {
                 docker {
-                    image 'maven:3.8.1-adoptopenjdk-11'
+                    image 'docker:dind'
                     args '-v /root/.m2:/root/.m2'
                 }
             }
