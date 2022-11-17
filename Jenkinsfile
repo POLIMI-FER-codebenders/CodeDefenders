@@ -21,6 +21,8 @@ pipeline {
                 sh 'rm -rf node'
                 echo '=========='
                 sh 'ls'
+                echo '=========='
+                sh 'mvn test'
             }
         }
     }
