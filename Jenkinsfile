@@ -15,7 +15,6 @@ pipeline {
             }
             steps {
                 sh 'mvn test'
-                sh 'docker'
             }
         }
         stage('Docker build') { 
@@ -23,8 +22,8 @@ pipeline {
             steps {
                 sh 'ls'
                 sh 'docker image ls'
-                sh 'docker build -f docker/Dockerfile .'
-                sh 'docker image ls'
+                //sh 'docker build -f docker/Dockerfile .'
+                //sh 'docker image ls'
             }
         }
     }
