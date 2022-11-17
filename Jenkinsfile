@@ -14,7 +14,7 @@ pipeline {
                 CI = 'false'
             }
             steps {
-                sh 'mvn -v'
+                sh 'mvn -X test'
             }
         }
     }
