@@ -179,6 +179,10 @@
 			<plugin>
 				<groupId>com.github.eirslett</groupId>
 				<artifactId>frontend-maven-plugin</artifactId>
+				<configuration>
+                        <nodeVersion>v16.17.1</nodeVersion>
+                        <npmVersion>8.15.0</npmVersion>
+                    </configuration>
 				<executions>
 					<execution>
 						<id>install node and npm</id>
