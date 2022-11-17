@@ -11,7 +11,7 @@ COPY ./src ./src/
 RUN npm install
 RUN npm run bundle
 RUN ls
-RUN pwd
+RUN pwd -P
 
 
 FROM maven:3.8-openjdk-11 AS build
@@ -22,3 +22,4 @@ COPY ./.git ./.git/
 COPY pom.xml .
 COPY ./local-repo ./local-repo/
 COPY checkstyle-codedefenders.xml .
+
