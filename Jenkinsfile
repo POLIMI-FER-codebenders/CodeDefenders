@@ -1,30 +1,19 @@
 pipeline {
-    /*agent {
-        docker {
-            image 'maven:3.8.1-adoptopenjdk-11' 
-            args '-v /root/.m2:/root/.m2' 
+    agent {
+        // Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 ./build/
+        dockerfile {
+            filename 'Dockerfile.test'
+            //dir 'build'
+            args '-v /root/.m2:/root/.m2'
         }
-    }*/
-    agent any
+    }
     environment {
        CI = 'false'
     }
     stages {
         stage('Run tests') { 
-            environment {
-                CI = 'false'
-            }
             steps {
-                sh 'ls'
-                echo '=========='
-                //sh 'ls node'
-                //echo '=========='
-                //sh 'rm -rf node'
-                //echo '=========='
-                //sh 'ls'
-                //echo '=========='
-                //sh 'mvn test'
-                sh 'mvn -v'
+                sh 'mvn -X test'
             }
         }
     }
