@@ -24,6 +24,7 @@ pipeline {
                 //sh 'ls'
                 //echo '=========='
                 //sh 'mvn test'
+                sh 'mvn -v'
             }
         }
     }
