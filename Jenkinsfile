@@ -15,8 +15,12 @@ pipeline {
             }
             steps {
                 sh 'ls'
+                echo '=========='
                 sh 'ls node'
+                echo '=========='
                 sh 'rm -rf node'
+                echo '=========='
+                sh 'ls'
             }
         }
     }
