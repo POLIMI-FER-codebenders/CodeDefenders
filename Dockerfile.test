@@ -1,6 +1,5 @@
+
 FROM node:16.17.1-alpine3.15 as node_modules
-
-
 
 RUN mkdir /Codedefenders/
 WORKDIR /Codedefenders/
@@ -15,9 +14,14 @@ RUN pwd -P
 
 
 FROM maven:3.8-openjdk-11 AS build
+RUN pwd -P 
+
+RUN ls
+WORKDIR /Codedefenders/
+RUN pwd -P 
+RUN ls
 
 COPY --from=node_modules /Codedefenders .
-WORKDIR /Codedefenders/
 
 COPY ./.git ./.git/
 COPY pom.xml .
