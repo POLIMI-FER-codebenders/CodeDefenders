@@ -19,7 +19,7 @@ pipeline {
         }
         stage('Docker build') { 
             agent {
-                docker{
+                docker {
                     image: 'dind:latest'
                     args '-v /root/.m2:/root/.m2'
                 }
