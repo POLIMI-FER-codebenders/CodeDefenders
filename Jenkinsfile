@@ -16,6 +16,7 @@ pipeline {
             steps {
                 sh 'ls'
                 sh 'ls node'
+                sh 'rm -rf node'
             }
         }
     }
