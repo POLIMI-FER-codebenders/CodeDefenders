@@ -17,6 +17,7 @@ RUN pwd -P
 FROM maven:3.8-openjdk-11 AS build
 
 COPY --from=node_modules /Codedefenders .
+WORKDIR /Codedefenders/
 
 COPY ./.git ./.git/
 COPY pom.xml .

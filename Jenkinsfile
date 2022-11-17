@@ -18,7 +18,12 @@ pipeline {
             }
         }
         stage('Docker build') { 
-            agent any
+            agent {
+                docker{
+                    image: dind:latest
+                    args '-v /root/.m2:/root/.m2'
+                }
+            }
             steps {
                 sh 'ls'
                 sh 'docker image ls'
