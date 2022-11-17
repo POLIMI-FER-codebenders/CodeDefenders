@@ -1,17 +1,19 @@
 pipeline {
     agent {
-        docker {
-            image 'maven:3.8.1-adoptopenjdk-11' 
-            args '-v /root/.m2:/root/.m2' 
+        // Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 ./build/
+        dockerfile {
+            filename 'Dockerfile.test'
+            //dir 'build'
+            args '-v /root/.m2:/root/.m2'
         }
     }
     environment {
        CI = 'false'
     }
     stages {
-        stage('Build') { 
+        stage('Run tests') { 
             steps {
-                sh 'mvn -X -e clean install' 
+                sh 'mvn -X test'
             }
         }
     }
