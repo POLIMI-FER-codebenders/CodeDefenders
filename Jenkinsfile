@@ -21,6 +21,9 @@ pipeline {
             agent any
             steps {
                 sh 'ls'
+                sh 'docker image ls'
+                sh 'docker build -f docker/Dockerfile .'
+                sh 'docker image ls'
             }
         }
     }
