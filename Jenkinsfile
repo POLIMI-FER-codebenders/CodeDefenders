@@ -18,20 +18,11 @@ pipeline {
             }
         }
         stage('Docker build') { 
-            //agent any
-            agent {
-                // Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 ./build/
-                docker {
-                    image 'docker:dind'
-                    //dir 'build'
-                    args '-v /root/.m2:/root/.m2'
-                }
-            }
+            agent any
             environment {
 		        DOCKERHUB_CREDENTIALS=credentials('dockerhub_access')
 	        }
             steps {
-                sh 'docker -v'
                 sh 'ls'
                 //echo "Running commit: ${env.GIT_COMMIT}"
                 sh "docker build --file ./docker/Dockerfile.deploy --tag hrom459/codedefenders:${env.GIT_COMMIT} ."
@@ -40,7 +31,7 @@ pipeline {
                 sh "echo ${DOCKERHUB_CREDENTIALS_USR}"
                 sh "echo ${DOCKERHUB_CREDENTIALS_PSW}"
                 sh "echo ${DOCKERHUB_CREDENTIALS}"
-                sh "echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin"
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
                 sh "docker push hrom459/codedefenders:${env.GIT_COMMIT}"
             }
         }
