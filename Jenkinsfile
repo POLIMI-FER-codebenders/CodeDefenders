@@ -19,12 +19,18 @@ pipeline {
         }
         stage('Docker build') { 
             agent any
+            environment {
+		        DOCKERHUB_CREDENTIALS=credentials('dockerhub-access')
+	        }
             steps {
                 sh 'ls'
                 //echo "Running commit: ${env.GIT_COMMIT}"
                 sh "docker build --file ./docker/Dockerfile.deploy --tag codedefenders/codedefenders:${env.GIT_COMMIT} ."
                 //sh 'docker build -f docker/Dockerfile .'
                 sh 'docker image ls'
+                sh "echo ${DOCKERHUB_CREDENTIALS_USR}"
+                sh "echo ${DOCKERHUB_CREDENTIALS_PSW}"
+                sh "echo ${DOCKERHUB_CREDENTIALS}"
             }
         }
     }
