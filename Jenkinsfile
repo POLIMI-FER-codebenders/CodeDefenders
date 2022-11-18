@@ -31,6 +31,7 @@ pipeline {
 		        DOCKERHUB_CREDENTIALS=credentials('dockerhub_access')
 	        }
             steps {
+                sh 'docker -v'
                 sh 'ls'
                 //echo "Running commit: ${env.GIT_COMMIT}"
                 sh "docker build --file ./docker/Dockerfile.deploy --tag hrom459/codedefenders:${env.GIT_COMMIT} ."
