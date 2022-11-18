@@ -20,7 +20,7 @@ pipeline {
         stage('Docker build') { 
             agent any
             environment {
-		        DOCKERHUB_CREDENTIALS=credentials('dockerhub-access')
+		        DOCKERHUB_CREDENTIALS=credentials('dockerhub_access')
 	        }
             steps {
                 sh 'ls'
