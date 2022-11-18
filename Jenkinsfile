@@ -18,7 +18,15 @@ pipeline {
             }
         }
         stage('Docker build') { 
-            agent any
+            //agent any
+            agent {
+                // Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 ./build/
+                docker {
+                    image 'docker:dind'
+                    //dir 'build'
+                    args '-v /root/.m2:/root/.m2'
+                }
+            }
             environment {
 		        DOCKERHUB_CREDENTIALS=credentials('dockerhub_access')
 	        }
