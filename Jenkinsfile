@@ -18,6 +18,7 @@ pipeline {
             }
         }
         stage('Docker build') { 
+            // dind cache working?
             agent any
             environment {
 		        DOCKERHUB_CREDENTIALS=credentials('dockerhub_access')
