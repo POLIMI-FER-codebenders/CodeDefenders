@@ -69,7 +69,7 @@ pipeline {
 		        DISCORD_WEBHOOK=credentials('discord_webhook')
 	        }
             steps {
-                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                catchError/*(buildResult: 'FAILURE', stageResult: 'FAILURE')*/ {
                     discordSend (
                         description: "Job failed", 
                         footer: "You should checkout why", 
