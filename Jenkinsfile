@@ -17,7 +17,7 @@ pipeline {
                     title: JOB_NAME, 
                     webhookURL: "$DISCORD_WEBHOOK"
                 )
-                printenv
+                sh 'printenv'
             }
         }
         stage('Run tests') { 
