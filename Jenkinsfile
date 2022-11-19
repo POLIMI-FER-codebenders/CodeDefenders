@@ -14,6 +14,14 @@ pipeline {
                 }
             }
             steps {
+                discordSend (
+                    description: "Job started", 
+                    footer: "ETA 10min", 
+                    link: env.BUILD_URL, 
+                    result: currentBuild.currentResult, 
+                    title: JOB_NAME, 
+                    webhookURL: "$DISCORD_WEBHOOK"
+                )
                 sh 'mvn test'
             }
         }
@@ -36,20 +44,39 @@ pipeline {
                 sh "docker push hrom459/codedefenders:${env.GIT_COMMIT}"
             }
         }
-        stage('Notify'){
+        stage('Notify on success'){
             agent any
             environment {
 		        DISCORD_WEBHOOK=credentials('discord_webhook')
 	        }
             steps{
                 discordSend (
-                    description: "Jenkins Pipeline Build", 
-                    footer: "Footer Text", 
+                    description: "Job finished", 
+                    footer: "Your image: hrom459/codedefenders:${env.GIT_COMMIT}", 
                     link: env.BUILD_URL, 
                     result: currentBuild.currentResult, 
                     title: JOB_NAME, 
                     webhookURL: "$DISCORD_WEBHOOK"
                 )
+            }
+        }
+        stage('Notify on failure'){
+            agent any
+            environment {
+		        DISCORD_WEBHOOK=credentials('discord_webhook')
+	        }
+            steps {
+                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                    discordSend (
+                        description: "Job failed", 
+                        footer: "You should checkout why", 
+                        link: env.BUILD_URL, 
+                        result: currentBuild.currentResult, 
+                        title: JOB_NAME, 
+                        webhookURL: "$DISCORD_WEBHOOK"
+                    )
+                    //sh "exit 1"
+                }
             }
         }
     }
