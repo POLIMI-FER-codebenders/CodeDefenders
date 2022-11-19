@@ -58,7 +58,7 @@ pipeline {
         success{
                 echo currentBuild.currentResult
                 discordSend (
-                    description: "Job finished on branch ${env.GIT_BRANCH}, last commit by: ${GIT_COMMITTER_NAME}", 
+                    description: "Job successful on branch ${env.GIT_BRANCH}", 
                     footer: "Your image: hrom459/codedefenders:${env.GIT_COMMIT}", 
                     link: env.BUILD_URL, 
                     result: currentBuild.currentResult, 
@@ -69,8 +69,8 @@ pipeline {
         unsuccessful {
                 echo currentBuild.currentResult
                 discordSend (
-                        description: "Job is not successful on branch ${env.GIT_BRANCH}, last commit by: ${env.GIT_COMMITTER_NAME}", 
-                        footer: "You should checkout why", 
+                        description: "Job is not successful on branch ${env.GIT_BRANCH}", 
+                        footer: currentBuild.currentResult, 
                         link: env.BUILD_URL, 
                         result: currentBuild.currentResult, 
                         title: JOB_NAME, 
