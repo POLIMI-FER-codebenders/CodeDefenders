@@ -15,7 +15,7 @@ pipeline {
                     link: env.BUILD_URL, 
                     result: "UNSTABLE", // so we get yellow color in discord, 
                     title: JOB_NAME, 
-                    webhookURL: ${DISCORD_WEBHOOK}
+                    webhookURL: DISCORD_WEBHOOK
                 )
                 sh 'printenv'
             }
