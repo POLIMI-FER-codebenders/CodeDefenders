@@ -18,7 +18,7 @@ pipeline {
             }
         }
         stage('Docker build') { 
-            // dind cache working? #2
+            // dind cache working? #3
             agent any
             environment {
 		        DOCKERHUB_CREDENTIALS=credentials('dockerhub_access')
@@ -32,7 +32,7 @@ pipeline {
                 sh "echo ${DOCKERHUB_CREDENTIALS_USR}"
                 sh "echo ${DOCKERHUB_CREDENTIALS_PSW}"
                 sh "echo ${DOCKERHUB_CREDENTIALS}"
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                sh "echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin"
                 sh "docker push hrom459/codedefenders:${env.GIT_COMMIT}"
             }
         }
