@@ -68,7 +68,7 @@ pipeline {
         unsuccessful {
                 echo currentBuild.currentResult
                 discordSend (
-                        description: "Job is not successful on branch ${env.GIT_BRANCH}, last commit by: ${GIT_AUTHOR_NAME}", 
+                        description: "Job is not successful on branch ${env.GIT_BRANCH}, last commit by: ${env.GIT_COMMITTER_NAME}", 
                         footer: "You should checkout why", 
                         link: env.BUILD_URL, 
                         result: currentBuild.currentResult, 
