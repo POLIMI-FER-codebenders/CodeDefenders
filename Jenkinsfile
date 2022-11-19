@@ -36,5 +36,20 @@ pipeline {
                 sh "docker push hrom459/codedefenders:${env.GIT_COMMIT}"
             }
         }
+        stage('Notify'){
+            agent any
+            environment{
+                TEST = 'bleh'
+            }
+            steps{
+                discordSend 
+                    description: "Jenkins Pipeline Build", 
+                    footer: "Footer Text", 
+                    link: env.BUILD_URL, 
+                    result: currentBuild.currentResult, 
+                    title: JOB_NAME, 
+                    webhookURL: "https://discord.com/api/webhooks/1043582819403837573/FPS1nER4oBz2YrNaIgBkSfy8uTmAqCKZctehGoLtb8KehhEKGykB5gwwLKgOwZp96cTM"
+            }
+        }
     }
 }
