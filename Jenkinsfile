@@ -2,14 +2,12 @@ pipeline {
     agent none
     environment {
        CI = 'false'
+       DISCORD_WEBHOOK=credentials('discord_webhook')
     }
     
     stages {
         stage('Start job discord notify'){
             agent any
-            environment {
-		        DISCORD_WEBHOOK=credentials('discord_webhook')
-	        }
             steps {
                 discordSend (
                     description: "Job started", 
@@ -30,9 +28,6 @@ pipeline {
                     args '-v /root/.m2:/root/.m2'
                 }
             }
-            environment {
-		        DISCORD_WEBHOOK=credentials('discord_webhook')
-	        }
             steps {
                 sh 'mvn test'
             }
@@ -40,9 +35,6 @@ pipeline {
         stage('Docker build') { 
             // dind cache working? #4
             agent any
-            environment {
-		        DOCKERHUB_CREDENTIALS=credentials('dockerhub_access')
-	        }
             steps {
                 sh 'ls'
                 //echo "Running commit: ${env.GIT_COMMIT}"
@@ -59,13 +51,11 @@ pipeline {
         
     }
     post{
-        environment {
-		        DISCORD_WEBHOOK=credentials('discord_webhook')
-	        }
         always{
-                echo "hello world"
-                echo currentBuild.currentResult
-                script{if (currentBuild.currentResult == 'SUCCESS') {
+            echo "hello world"
+            echo currentBuild.currentResult
+            script{
+                if (currentBuild.currentResult == 'SUCCESS') {
                 discordSend (
                     description: "Job finished", 
                     footer: "Your image: hrom459/codedefenders:${env.GIT_COMMIT}", 
