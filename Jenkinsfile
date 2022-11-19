@@ -13,7 +13,7 @@ pipeline {
                     description: "Job started", 
                     footer: "ETA ~10min", 
                     link: env.BUILD_URL, 
-                    result: "UNSTABLE" // so we get yellow color in discord, 
+                    result: "UNSTABLE", // so we get yellow color in discord, 
                     title: JOB_NAME, 
                     webhookURL: "$DISCORD_WEBHOOK"
                 )
