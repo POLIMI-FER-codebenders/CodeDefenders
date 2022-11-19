@@ -11,9 +11,9 @@ pipeline {
             steps {
                 discordSend (
                     description: "Job started", 
-                    footer: "ETA 10min", 
+                    footer: "ETA ~10min", 
                     link: env.BUILD_URL, 
-                    result: currentBuild.currentResult, 
+                    result: "UNSTABLE" // so we get yellow color in discord, 
                     title: JOB_NAME, 
                     webhookURL: "$DISCORD_WEBHOOK"
                 )
