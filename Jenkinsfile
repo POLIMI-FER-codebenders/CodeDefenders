@@ -13,6 +13,9 @@ pipeline {
                     args '-v /root/.m2:/root/.m2'
                 }
             }
+            environment {
+		        DISCORD_WEBHOOK=credentials('discord_webhook')
+	        }
             steps {
                 discordSend (
                     description: "Job started", 
