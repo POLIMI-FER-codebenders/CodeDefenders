@@ -66,7 +66,7 @@ pipeline {
             steps{
                 echo "hello world"
                 echo currentBuild.currentResult
-                if (currentBuild.currentResult == 'SUCCESS') {
+                script{if (currentBuild.currentResult == 'SUCCESS') {
                 discordSend (
                     description: "Job finished", 
                     footer: "Your image: hrom459/codedefenders:${env.GIT_COMMIT}", 
@@ -84,7 +84,7 @@ pipeline {
                         title: JOB_NAME, 
                         webhookURL: "$DISCORD_WEBHOOK"
                     )
-            }
+            }}
             }
             
         }   
