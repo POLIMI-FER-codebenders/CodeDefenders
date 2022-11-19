@@ -59,10 +59,10 @@ pipeline {
         
     }
     post{
-        always{
+        always{/*
         environment {
 		        DISCORD_WEBHOOK=credentials('discord_webhook')
-	        }
+	        }*/
             steps{
                 echo "hello world"
                 echo currentBuild.currentResult
