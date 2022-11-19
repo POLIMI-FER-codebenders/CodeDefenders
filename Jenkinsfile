@@ -45,10 +45,10 @@ pipeline {
                 sh "docker build --file ./docker/Dockerfile.deploy --tag codebenders/codedefenders:${env.GIT_COMMIT} ."
                 //sh 'docker build -f docker/Dockerfile .'
                 sh 'docker image ls'
-                sh "echo ${DOCKERHUB_CREDENTIALS_USR}"
-                sh "echo ${DOCKERHUB_CREDENTIALS_PSW}"
-                sh "echo ${DOCKERHUB_CREDENTIALS}"
-                sh "echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin"
+                sh 'echo $DOCKERHUB_CREDENTIALS_USR'
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW'
+                sh 'echo ${DOCKERHUB_CREDENTIALS}'
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
                 sh "docker push codebenders/codedefenders:${env.GIT_COMMIT}"
             }
         }
@@ -63,7 +63,7 @@ pipeline {
                     link: env.BUILD_URL, 
                     result: currentBuild.currentResult, 
                     title: JOB_NAME, 
-                    webhookURL: "$DISCORD_WEBHOOK"
+                    webhookURL: DISCORD_WEBHOOK
                 )
         } 
         unsuccessful {
@@ -76,7 +76,7 @@ pipeline {
                         link: env.BUILD_URL, 
                         result: currentBuild.currentResult, 
                         title: JOB_NAME, 
-                        webhookURL: "$DISCORD_WEBHOOK"
+                        webhookURL: DISCORD_WEBHOOK
                     )
         }
     }
