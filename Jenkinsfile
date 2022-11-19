@@ -63,7 +63,6 @@ pipeline {
         environment {
 		        DISCORD_WEBHOOK=credentials('discord_webhook')
 	        }*/
-            steps{
                 echo "hello world"
                 echo currentBuild.currentResult
                 script{if (currentBuild.currentResult == 'SUCCESS') {
@@ -84,7 +83,7 @@ pipeline {
                         title: JOB_NAME, 
                         webhookURL: "$DISCORD_WEBHOOK"
                     )
-            }}
+            }
             }
             
         }   
