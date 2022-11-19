@@ -69,6 +69,7 @@ pipeline {
         unsuccessful {
                 echo currentBuild.currentResult
                 echo "${env.GIT_BRANCH}"
+                sh 'printenv'
                 discordSend (
                         description: "Job is not successful on branch ${env.GIT_BRANCH}", 
                         footer: currentBuild.currentResult, 
