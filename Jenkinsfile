@@ -3,7 +3,24 @@ pipeline {
     environment {
        CI = 'false'
     }
+    
     stages {
+        stage('Start job discord notify'){
+            agent any
+            environment {
+		        DISCORD_WEBHOOK=credentials('discord_webhook')
+	        }
+            steps {
+                discordSend (
+                    description: "Job started", 
+                    footer: "ETA 10min", 
+                    link: env.BUILD_URL, 
+                    result: currentBuild.currentResult, 
+                    title: JOB_NAME, 
+                    webhookURL: "$DISCORD_WEBHOOK"
+                )
+            }
+        }
         stage('Run tests') { 
             agent {
                 // Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 ./build/
@@ -17,14 +34,6 @@ pipeline {
 		        DISCORD_WEBHOOK=credentials('discord_webhook')
 	        }
             steps {
-                discordSend (
-                    description: "Job started", 
-                    footer: "ETA 10min", 
-                    link: env.BUILD_URL, 
-                    result: currentBuild.currentResult, 
-                    title: JOB_NAME, 
-                    webhookURL: "$DISCORD_WEBHOOK"
-                )
                 sh 'mvn test'
             }
         }
@@ -47,12 +56,17 @@ pipeline {
                 sh "docker push hrom459/codedefenders:${env.GIT_COMMIT}"
             }
         }
-        stage('Notify on success'){
-            agent any
-            environment {
+        
+    }
+    post{
+        environment {
 		        DISCORD_WEBHOOK=credentials('discord_webhook')
 	        }
+        always{
             steps{
+                echo "hello world"
+                echo currentBuild.currentResult
+                if (currentBuild.currentResult == 'SUCCESS') {
                 discordSend (
                     description: "Job finished", 
                     footer: "Your image: hrom459/codedefenders:${env.GIT_COMMIT}", 
@@ -61,26 +75,18 @@ pipeline {
                     title: JOB_NAME, 
                     webhookURL: "$DISCORD_WEBHOOK"
                 )
-            }
-        }
-        stage('Notify on failure'){
-            agent any
-            environment {
-		        DISCORD_WEBHOOK=credentials('discord_webhook')
-	        }
-            steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    discordSend (
-                        description: "Job failed", 
+            } else {
+                discordSend (
+                        description: "Job is not successful", 
                         footer: "You should checkout why", 
                         link: env.BUILD_URL, 
                         result: currentBuild.currentResult, 
                         title: JOB_NAME, 
                         webhookURL: "$DISCORD_WEBHOOK"
                     )
-                    sh "exit 1"
-                }
             }
-        }
+            }
+            
+        }   
     }
 }
