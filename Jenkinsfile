@@ -35,6 +35,9 @@ pipeline {
         stage('Docker build') { 
             // dind cache working? #4
             agent any
+            environment {
+		        DOCKERHUB_CREDENTIALS=credentials('dockerhub_access')
+	        }
             steps {
                 sh 'ls'
                 //echo "Running commit: ${env.GIT_COMMIT}"
@@ -51,31 +54,27 @@ pipeline {
         
     }
     post{
-        always{
-            echo "hello world"
-            echo currentBuild.currentResult
-            script{
-                if (currentBuild.currentResult == 'SUCCESS') {
+        success{
+                echo currentBuild.currentResult
                 discordSend (
-                    description: "Job finished", 
+                    description: "Job finished on branch ${env.GIT_BRANCH}, last commit by: ${GIT_COMMITTER_NAME}", 
                     footer: "Your image: hrom459/codedefenders:${env.GIT_COMMIT}", 
                     link: env.BUILD_URL, 
                     result: currentBuild.currentResult, 
                     title: JOB_NAME, 
                     webhookURL: "$DISCORD_WEBHOOK"
                 )
-            } else {
+        } 
+        unsuccessful {
+                echo currentBuild.currentResult
                 discordSend (
-                        description: "Job is not successful", 
+                        description: "Job is not successful on branch ${env.GIT_BRANCH}, last commit by: ${GIT_COMMITTER_NAME}", 
                         footer: "You should checkout why", 
                         link: env.BUILD_URL, 
                         result: currentBuild.currentResult, 
                         title: JOB_NAME, 
                         webhookURL: "$DISCORD_WEBHOOK"
                     )
-            }
-            }
-            
-        }   
+        }
     }
 }
