@@ -55,7 +55,6 @@ pipeline {
         
     }
     post{
-        agent any
         success{
                 echo currentBuild.currentResult
                 discordSend (
