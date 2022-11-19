@@ -1,5 +1,5 @@
 pipeline {
-    agent none
+    agent any
     environment {
        CI = 'false'
        DISCORD_WEBHOOK=credentials('discord_webhook')
