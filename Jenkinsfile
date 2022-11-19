@@ -42,14 +42,14 @@ pipeline {
             steps {
                 sh 'ls'
                 //echo "Running commit: ${env.GIT_COMMIT}"
-                sh "docker build --file ./docker/Dockerfile.deploy --tag hrom459/codedefenders:${env.GIT_COMMIT} ."
+                sh "docker build --file ./docker/Dockerfile.deploy --tag codebenders/codedefenders:${env.GIT_COMMIT} ."
                 //sh 'docker build -f docker/Dockerfile .'
                 sh 'docker image ls'
                 sh "echo ${DOCKERHUB_CREDENTIALS_USR}"
                 sh "echo ${DOCKERHUB_CREDENTIALS_PSW}"
                 sh "echo ${DOCKERHUB_CREDENTIALS}"
                 sh "echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin"
-                sh "docker push hrom459/codedefenders:${env.GIT_COMMIT}"
+                sh "docker push codebenders/codedefenders:${env.GIT_COMMIT}"
             }
         }
         
@@ -59,7 +59,7 @@ pipeline {
                 echo currentBuild.currentResult
                 discordSend (
                     description: "Job successful on branch ${env.GIT_BRANCH}", 
-                    footer: "Your image: hrom459/codedefenders:${env.GIT_COMMIT}", 
+                    footer: "Your image: codebenders/codedefenders:${env.GIT_COMMIT}", 
                     link: env.BUILD_URL, 
                     result: currentBuild.currentResult, 
                     title: JOB_NAME, 
