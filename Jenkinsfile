@@ -41,18 +41,6 @@ pipeline {
                     //actions: [[label:'Tilt', description:'Tilt', identifier:'Tilt']]
                 )*/
             }
-            post{
-                always{
-                    publishChecks (
-                        name: 'mavening', 
-                        title: 'Maven tests', 
-                        summary: 'mvn test ran and returned no errors',
-                        text: 'mvn test => success',
-                        detailsURL: "${env.RUN_DISPLAY_URL}",
-                        //actions: [[label:'Tilt', description:'Tilt', identifier:'Tilt']]
-                    )
-                }
-            }
         }
         stage('Docker build') {
             agent any
@@ -70,17 +58,6 @@ pipeline {
                     text: "docker build & push => success\nYour image: codebenders/codedefenders:${env.GIT_COMMIT}",
                     detailsURL: "${env.RUN_DISPLAY_URL}",
                 )*/
-            }
-            post{
-                always{
-                        publishChecks (
-                        name: 'dockering', 
-                        title: 'Docker build and push', 
-                        summary: 'Build docker image and publish to dockerhub',
-                        text: "docker build & push => success\nYour image: codebenders/codedefenders:${env.GIT_COMMIT}",
-                        detailsURL: "${env.RUN_DISPLAY_URL}",
-                    )
-                }
             }
         }
         
