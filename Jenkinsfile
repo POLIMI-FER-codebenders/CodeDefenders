@@ -18,14 +18,6 @@ pipeline {
                     webhookURL: DISCORD_WEBHOOK
                 )
                 sh 'printenv'
-                publishChecks (
-                    name: 'Tilt 1', 
-                    title: 'Tilt 1', 
-                    summary: 'Tilt 1',
-                    text: 'Tilt 1',
-                    detailsURL: 'https://github.com/jenkinsci/checks-api-plugin#pipeline-usage',
-                    //actions: [[label:'Tilt', description:'Tilt', identifier:'Tilt']]
-                )
             }
         }
         stage('Run tests') { 
@@ -39,6 +31,15 @@ pipeline {
             }
             steps {
                 sh 'mvn test'
+
+                publishChecks (
+                    name: 'Maven tests', 
+                    title: 'Maven tests passed', 
+                    summary: 'mvn test ran and returned no errors',
+                    text: 'mvn test => success',
+                    detailsURL: '$RUN_DISPLAY_URL',
+                    //actions: [[label:'Tilt', description:'Tilt', identifier:'Tilt']]
+                )
             }
         }
         stage('Docker build') {
@@ -49,6 +50,15 @@ pipeline {
             steps {
                 sh "docker build --file ./docker/Dockerfile.deploy --tag codebenders/codedefenders:${env.GIT_COMMIT} ."
                 sh "docker push codebenders/codedefenders:${env.GIT_COMMIT}"
+
+                publishChecks (
+                    name: 'dockering', 
+                    title: 'Docker build and push', 
+                    summary: 'Build docker image and publish to dockerhub',
+                    text: 'docker build & push => success\nYour image: codebenders/codedefenders:${env.GIT_COMMIT}',
+                    detailsURL: '$RUN_DISPLAY_URL',
+                    //actions: [[label:'Tilt', description:'Tilt', identifier:'Tilt']]
+                )
             }
         }
         
