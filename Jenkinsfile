@@ -37,7 +37,7 @@ pipeline {
                     title: 'Maven tests passed', 
                     summary: 'mvn test ran and returned no errors',
                     text: 'mvn test => success',
-                    detailsURL: '$RUN_DISPLAY_URL',
+                    detailsURL: "${env.RUN_DISPLAY_URL}",
                     //actions: [[label:'Tilt', description:'Tilt', identifier:'Tilt']]
                 )
             }
@@ -56,7 +56,7 @@ pipeline {
                     title: 'Docker build and push', 
                     summary: 'Build docker image and publish to dockerhub',
                     text: 'docker build & push => success\nYour image: codebenders/codedefenders:${env.GIT_COMMIT}',
-                    detailsURL: '$RUN_DISPLAY_URL',
+                    detailsURL: "${env.RUN_DISPLAY_URL}",
                     //actions: [[label:'Tilt', description:'Tilt', identifier:'Tilt']]
                 )
             }
