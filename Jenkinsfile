@@ -17,6 +17,14 @@ pipeline {
                     title: JOB_NAME, 
                     webhookURL: DISCORD_WEBHOOK
                 )
+                publishChecks 
+                    name: 'Tilt', 
+                    title: 'Tilt', 
+                    summary: 'Tilt',
+                    text: 'Tilt',
+                    detailsURL: 'https://github.com/jenkinsci/checks-api-plugin#pipeline-usage',
+                    actions: [[label:'Tilt', description:'Tilt', identifier:'Tilt']]
+
             }
         }
         stage('Run tests') { 
