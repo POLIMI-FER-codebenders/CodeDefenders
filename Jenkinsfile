@@ -18,6 +18,11 @@ pipeline {
                     webhookURL: DISCORD_WEBHOOK
                 )
                 sh 'printenv'
+                publishChecks name: 'Start job discord notify', title: 'Start job discord notify', summary: 'check through pipeline',
+                text: 'you can publish checks in pipeline script',
+                detailsURL: 'https://github.com/jenkinsci/checks-api-plugin#pipeline-usage',
+                actions: [[label:'an-user-request-action', description:'actions allow users to request pre-defined behaviours', identifier:'an unique identifier']]
+        
             }
         }
         stage('Run tests') { 
@@ -31,6 +36,11 @@ pipeline {
             }
             steps {
                 sh 'mvn test'
+                publishChecks name: 'Run tests', title: 'Run tests', summary: 'check through pipeline',
+                text: 'you can publish checks in pipeline script',
+                detailsURL: 'https://github.com/jenkinsci/checks-api-plugin#pipeline-usage',
+                actions: [[label:'an-user-request-action', description:'actions allow users to request pre-defined behaviours', identifier:'an unique identifier']]
+        
             }
         }
         stage('Docker build') { 
@@ -50,6 +60,11 @@ pipeline {
                 sh 'echo ${DOCKERHUB_CREDENTIALS}'
                 sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
                 sh "docker push codebenders/codedefenders:${env.GIT_COMMIT}"
+                publishChecks name: 'Docker build', title: 'Docker build', summary: 'check through pipeline',
+                text: 'you can publish checks in pipeline script',
+                detailsURL: 'https://github.com/jenkinsci/checks-api-plugin#pipeline-usage',
+                actions: [[label:'an-user-request-action', description:'actions allow users to request pre-defined behaviours', identifier:'an unique identifier']]
+        
             }
         }
         
