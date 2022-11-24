@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
        CI = 'false'
-       DISCORD_WEBHOOK=credentials('discord_webhook')
+       DISCORD_WEBHOOK = credentials('discord_webhook')
     }
     
     stages {
@@ -17,12 +17,6 @@ pipeline {
                     title: JOB_NAME, 
                     webhookURL: DISCORD_WEBHOOK
                 )
-                sh 'printenv'
-                publishChecks name: 'Start job discord notify', title: 'Start job discord notify', summary: 'check through pipeline',
-                text: 'Start job discord notify',
-                detailsURL: 'https://github.com/jenkinsci/checks-api-plugin#pipeline-usage',
-                actions: [[label:'Start job discord notify', description:'Start job discord notify', identifier:'Start job discord notify']]
-        
             }
         }
         stage('Run tests') { 
@@ -36,42 +30,22 @@ pipeline {
             }
             steps {
                 sh 'mvn test'
-                publishChecks name: 'Run tests', title: 'Run tests', summary: 'Run tests',
-                text: 'Run tests',
-                detailsURL: 'https://github.com/jenkinsci/checks-api-plugin#pipeline-usage',
-                actions: [[label:'Run tests', description:'Run tests', identifier:'Run tests']]
-        
             }
         }
-        stage('Docker build') { 
-            // dind cache working? #4
+        stage('Docker build') {
             agent any
             environment {
-		        DOCKERHUB_CREDENTIALS=credentials('dockerhub_access')
+		        DOCKERHUB_CREDENTIALS = credentials('dockerhub_access')
 	        }
             steps {
-                sh 'ls'
-                //echo "Running commit: ${env.GIT_COMMIT}"
                 sh "docker build --file ./docker/Dockerfile.deploy --tag codebenders/codedefenders:${env.GIT_COMMIT} ."
-                //sh 'docker build -f docker/Dockerfile .'
-                sh 'docker image ls'
-                sh 'echo $DOCKERHUB_CREDENTIALS_USR'
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW'
-                sh 'echo ${DOCKERHUB_CREDENTIALS}'
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
                 sh "docker push codebenders/codedefenders:${env.GIT_COMMIT}"
-                publishChecks name: 'Docker build', title: 'Docker build', summary: 'Docker build',
-                text: 'Docker build',
-                detailsURL: 'https://github.com/jenkinsci/checks-api-plugin#pipeline-usage',
-                actions: [[label:'Docker build', description:'Docker build', identifier:'Docker build']]
-        
             }
         }
         
     }
     post{
         success{
-                echo currentBuild.currentResult
                 discordSend (
                     description: "Job successful on branch ${env.GIT_BRANCH}", 
                     footer: "Your image: codebenders/codedefenders:${env.GIT_COMMIT}", 
@@ -82,9 +56,6 @@ pipeline {
                 )
         } 
         unsuccessful {
-                echo currentBuild.currentResult
-                echo "${env.GIT_BRANCH}"
-                sh 'printenv'
                 discordSend (
                         description: "Job is not successful on branch ${env.GIT_BRANCH}", 
                         footer: currentBuild.currentResult, 
