@@ -21,6 +21,9 @@ pipeline {
             }
         }
         stage('Run tests') { 
+            when {
+                changeset "src/**"
+            }
             agent {
                 // Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 ./build/
                 dockerfile {
@@ -34,6 +37,12 @@ pipeline {
             }
         }
         stage('Docker build') {
+            when {
+                anyOf {
+                    changeset "docker/**"
+                    changeset "Jenkinsfile"
+                }
+            }
             agent any
             environment {
 		        DOCKERHUB_CREDENTIALS = credentials('dockerhub_access')
