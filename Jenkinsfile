@@ -57,7 +57,6 @@ pipeline {
                     summary: 'Build docker image and publish to dockerhub',
                     text: "docker build & push => success\nYour image: codebenders/codedefenders:${env.GIT_COMMIT}",
                     detailsURL: "${env.RUN_DISPLAY_URL}",
-                    //actions: [[label:'Tilt', description:'Tilt', identifier:'Tilt']]
                 )
             }
         }
