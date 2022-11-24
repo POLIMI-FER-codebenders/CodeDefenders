@@ -76,7 +76,7 @@ pipeline {
         } 
         unsuccessful {
                 discordSend (
-                        description: "Job is not successful on branch ${env.GIT_BRANCH}, ${env.CHANGE_AUTHOR}"", 
+                        description: "Job is not successful on branch ${env.GIT_BRANCH}, ${env.CHANGE_AUTHOR}", 
                         footer: currentBuild.currentResult, 
                         link: env.BUILD_URL, 
                         result: currentBuild.currentResult, 
