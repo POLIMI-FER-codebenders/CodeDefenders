@@ -17,13 +17,14 @@ pipeline {
                     title: JOB_NAME, 
                     webhookURL: DISCORD_WEBHOOK
                 )
+                sh 'printenv'
                 publishChecks (
-                    name: 'Tilt', 
-                    title: 'Tilt', 
-                    summary: 'Tilt',
-                    text: 'Tilt',
+                    name: 'Tilt 1', 
+                    title: 'Tilt 1', 
+                    summary: 'Tilt 1',
+                    text: 'Tilt 1',
                     detailsURL: 'https://github.com/jenkinsci/checks-api-plugin#pipeline-usage',
-                    actions: [[label:'Tilt', description:'Tilt', identifier:'Tilt']]
+                    //actions: [[label:'Tilt', description:'Tilt', identifier:'Tilt']]
                 )
             }
         }
