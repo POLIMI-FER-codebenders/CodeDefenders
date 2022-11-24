@@ -22,7 +22,10 @@ pipeline {
         }
         stage('Run tests') { 
             when {
-                changeset "src/**"
+                anyOf {
+                    changeset "src/**"
+                    changeset "pom.xml"
+                }
             }
             agent {
                 // Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 ./build/
@@ -40,6 +43,7 @@ pipeline {
             when {
                 anyOf {
                     changeset "docker/**"
+                    changeset "Dockerfile.*"
                     changeset "Jenkinsfile"
                 }
             }
