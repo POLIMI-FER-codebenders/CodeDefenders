@@ -33,8 +33,8 @@ pipeline {
                 sh 'mvn test'
 
                 publishChecks (
-                    name: 'Maven tests', 
-                    title: 'Maven tests passed', 
+                    name: 'mavening', 
+                    title: 'Maven tests', 
                     summary: 'mvn test ran and returned no errors',
                     text: 'mvn test => success',
                     detailsURL: "${env.RUN_DISPLAY_URL}",
