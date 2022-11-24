@@ -66,7 +66,7 @@ pipeline {
     post{
         success{
                 discordSend (
-                    description: "Job successful on branch ${env.GIT_BRANCH}", 
+                    description: "Hey ${env.CHANGE_AUTHOR}, job is successful on branch ${env.GIT_BRANCH}", 
                     footer: "Your image: codebenders/codedefenders:${env.GIT_COMMIT}, ${env.CHANGE_AUTHOR}", 
                     link: env.BUILD_URL, 
                     result: currentBuild.currentResult, 
@@ -76,7 +76,7 @@ pipeline {
         } 
         unsuccessful {
                 discordSend (
-                        description: "Job is not successful on branch ${env.GIT_BRANCH}, ${env.CHANGE_AUTHOR}", 
+                        description: "Hey ${env.CHANGE_AUTHOR}, job is not successful on branch ${env.GIT_BRANCH}", 
                         footer: currentBuild.currentResult, 
                         link: env.BUILD_URL, 
                         result: currentBuild.currentResult, 
