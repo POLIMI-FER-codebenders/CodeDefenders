@@ -6,7 +6,7 @@ pipeline {
     }
     
     stages {
-        stage('Start job discord notify'){
+        stage('Discord notify'){
             agent any
             steps {
                 discordSend (
@@ -30,7 +30,7 @@ pipeline {
             agent {
                 // Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 ./build/
                 dockerfile {
-                    filename 'Dockerfile.test'
+                    filename './docker/Dockerfile.test'
                     //dir 'build'
                     args '-v /root/.m2:/root/.m2'
                 }
