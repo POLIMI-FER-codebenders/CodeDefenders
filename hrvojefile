@@ -1,5 +1,0 @@
-FROM maven:3.8-openjdk-11
-RUN mkdir /Codedefenders/
-WORKDIR /Codedefenders/
-COPY * ./
-RUN mvn test
