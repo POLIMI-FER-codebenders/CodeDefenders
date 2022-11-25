@@ -28,4 +28,4 @@ COPY pom.xml .
 COPY ./local-repo ./local-repo/
 COPY checkstyle-codedefenders.xml .
 
-#trying to trigger pipeline
+#trying to trigger pipeline 1

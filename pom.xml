@@ -174,7 +174,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- trigger jenky-->
+			<!-- trigger jenky 1-->
 			<!-- Builds and bundles JavaScript -->
 			<!--<plugin>
 				<groupId>com.github.eirslett</groupId>
