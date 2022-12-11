@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -129,12 +130,14 @@ public class UploadClassAPI extends HttpServlet {
         }
 
         String prefix = login.getUser().getName();
-        String classAlias = prefix + "_" + name.replace(".java", "");
-        Path cutDir = Paths.get(CUTS_DIR, classAlias);
-        if (GameClassDAO.classExistsForAlias(classAlias) || Files.exists(cutDir)) {
-            APIUtils.respondJsonError(response, "The class name or file already exist", HttpServletResponse.SC_CONFLICT);
-            return;
-        }
+        String classAlias;
+        Path cutDir;
+        Random random = new Random();
+        do {
+            String num = String.format("%1$4s", random.nextInt(9999)).replace(' ', '0');
+            classAlias = prefix + "_" + name.replace(".java", "") + "_" + num;
+            cutDir = Paths.get(CUTS_DIR, classAlias);
+        } while (GameClassDAO.classExistsForAlias(classAlias) || Files.exists(cutDir));
 
         TestingFramework testingFramework = TestingFramework.JUNIT4;
         AssertionLibrary assertionLibrary = AssertionLibrary.JUNIT4_HAMCREST;
