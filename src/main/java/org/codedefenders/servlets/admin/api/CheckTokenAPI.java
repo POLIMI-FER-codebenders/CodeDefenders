@@ -19,6 +19,7 @@
 package org.codedefenders.servlets.admin.api;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -28,21 +29,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.codedefenders.auth.CodeDefendersAuth;
-import org.codedefenders.beans.admin.AdminCreateGamesBean;
-import org.codedefenders.database.GameDAO;
-import org.codedefenders.dto.api.GameID;
-import org.codedefenders.game.AbstractGame;
-import org.codedefenders.game.GameState;
 import org.codedefenders.game.Test;
+import org.codedefenders.model.UserEntity;
 import org.codedefenders.persistence.database.SettingsRepository;
 import org.codedefenders.persistence.database.UserRepository;
-import org.codedefenders.service.UserService;
+import org.codedefenders.service.AuthService;
 import org.codedefenders.service.game.GameService;
-import org.codedefenders.servlets.util.APIUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonParseException;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 /**
  * This {@link HttpServlet} offers an API for {@link Test tests}.
@@ -54,10 +51,10 @@ import com.google.gson.JsonParseException;
  *
  * @author <a href="https://github.com/werli">Phil Werli</a>
  */
-@WebServlet("/admin/api/game/start")
-public class StartGameAPI extends HttpServlet {
+@WebServlet("/admin/api/auth/self")
+public class CheckTokenAPI extends HttpServlet {
 
-    private static final Logger logger = LoggerFactory.getLogger(StartGameAPI.class);
+    private static final Logger logger = LoggerFactory.getLogger(CheckTokenAPI.class);
     @Inject
     CodeDefendersAuth login;
     @Inject
@@ -67,29 +64,20 @@ public class StartGameAPI extends HttpServlet {
     @Inject
     UserRepository userRepository;
     @Inject
-    UserService userService;
-    @Inject
-    AdminCreateGamesBean adminCreateGamesBean;
+    AuthService authService;
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        final GameID gameId;
-        try {
-            gameId = (GameID) APIUtils.parsePostOrRespondJsonError(request, response, GameID.class);
-        } catch (JsonParseException e) {
-            return;
-        }
-        AbstractGame game = GameDAO.getGame(gameId.getGameId());
-        if (game == null) {
-            APIUtils.respondJsonError(response, "Game with ID " + gameId.getGameId() + " not found", HttpServletResponse.SC_NOT_FOUND);
-        } else if (login.getUserId() != game.getCreatorId()) {
-            APIUtils.respondJsonError(response, "Only the game's creator can start the game", HttpServletResponse.SC_BAD_REQUEST);
-        } else if (game.getState() != GameState.CREATED) {
-            APIUtils.respondJsonError(response, "Game cannot be started since it has state " + game.getState(), HttpServletResponse.SC_BAD_REQUEST);
-        } else {
-            logger.info("Starting game {} (Setting state to ACTIVE)", gameId);
-            game.setState(GameState.ACTIVE);
-            game.update();
-        }
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        UserEntity user = authService.getUserEntity();
+        PrintWriter out = response.getWriter();
+        response.setContentType("application/json");
+        Gson gson = new Gson();
+        JsonObject root = new JsonObject();
+        root.add("userId", gson.toJsonTree(user.getId(), Integer.class));
+        root.add("username", gson.toJsonTree(user.getUsername(), String.class));
+        root.add("token", gson.toJsonTree(user.getToken(), String.class));
+        out.print(new Gson().toJson(root));
+        out.flush();
     }
 }
