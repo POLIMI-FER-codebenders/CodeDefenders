@@ -119,6 +119,20 @@ public class EventDAO {
         return DB.executeQueryReturnList(query, EventDAO::eventFromRS, values);
     }
 
+    public static List<Event> getEventsForAllGamesWithCreatorAndAfter(Integer creatorId, Long startTime) {
+        String query = String.join("\n", "SELECT e.*",
+                "FROM events e",
+                "JOIN games g ON",
+                "    e.Game_ID = g.ID",
+                "JOIN users u ON",
+                "    u.User_ID = g.Creator_ID",
+                "WHERE",
+                "    g.External IS NOT NULL AND g.Creator_ID = ? AND e.Timestamp > FROM_UNIXTIME(?)",
+                "LIMIT 501");
+        DatabaseValue<?>[] values = new DatabaseValue[] {DatabaseValue.of(creatorId), DatabaseValue.of(startTime)};
+        return DB.executeQueryReturnList(query, EventDAO::eventFromRS, values);
+    }
+
     public List<Event> getNewEventsForGame(int gameId, long timestamp, Role role) {
         String query = String.join("\n", "SELECT *",
                 "FROM events",
