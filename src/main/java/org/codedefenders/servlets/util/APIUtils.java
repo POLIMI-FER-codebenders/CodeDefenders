@@ -68,6 +68,8 @@ public class APIUtils {
                 param = ServletUtils.getIntParameter(request, name);
             } else if (clazz.equals(Float.class)) {
                 param = ServletUtils.getFloatParameter(request, name);
+            } else if (clazz.equals(Long.class)) {
+                param = ServletUtils.getLongParameter(request, name);
             } else {
                 throw new ServerException("Cannot parse argument " + name + " of class " + clazz.getName());
             }
