@@ -6,7 +6,10 @@ import javax.enterprise.inject.Typed;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
+import org.apache.shiro.session.SessionException;
+import org.apache.shiro.subject.Subject;
 import org.codedefenders.beans.message.MessagesBean;
 import org.codedefenders.service.UserService;
 import org.slf4j.Logger;
@@ -32,5 +35,18 @@ public class CodeDefendersFakeBearerHttpAuthenticationFilter extends CodeDefende
             return null;
         }
         return "Bearer " + token;
+    }
+
+    @Override
+    public boolean onPreHandle(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
+        if (request.getParameterMap().containsKey("token")) {
+            Subject subject = getSubject(request, response);
+            try {
+                subject.logout(); //logout if trying to log in with another token
+            } catch (SessionException ignored) {
+                //
+            }
+        }
+        return super.onPreHandle(request, response, mappedValue);
     }
 }
