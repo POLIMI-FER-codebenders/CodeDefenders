@@ -129,9 +129,9 @@ public class EventDAO {
                 "FROM events e",
                 "JOIN games g ON",
                 "    e.Game_ID = g.ID",
-                "JOIN users u ON",
-                "    u.User_ID = g.Creator_ID",
                 "WHERE",
+                "    e.Event_Status = \"GAME\" AND",
+                "    e.Player_ID != 3 AND e.Player_ID != 4 AND",
                 "    g.External IS NOT NULL AND g.Creator_ID = ? AND e.Timestamp > FROM_UNIXTIME(?)",
                 "LIMIT 501");
         DatabaseValue<?>[] values = new DatabaseValue[] {DatabaseValue.of(creatorId), DatabaseValue.of(startTime)};
