@@ -19,6 +19,7 @@
 package org.codedefenders.servlets.admin.api;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -29,11 +30,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.codedefenders.auth.CodeDefendersAuth;
 import org.codedefenders.beans.admin.AdminCreateGamesBean;
+import org.codedefenders.database.EventDAO;
 import org.codedefenders.database.GameDAO;
 import org.codedefenders.dto.api.GameID;
 import org.codedefenders.game.AbstractGame;
 import org.codedefenders.game.GameState;
 import org.codedefenders.game.Test;
+import org.codedefenders.model.Event;
+import org.codedefenders.model.EventStatus;
+import org.codedefenders.model.EventType;
 import org.codedefenders.persistence.database.SettingsRepository;
 import org.codedefenders.persistence.database.UserRepository;
 import org.codedefenders.service.UserService;
@@ -70,6 +75,8 @@ public class StartGameAPI extends HttpServlet {
     UserService userService;
     @Inject
     AdminCreateGamesBean adminCreateGamesBean;
+    @Inject
+    EventDAO eventDAO;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -90,6 +97,8 @@ public class StartGameAPI extends HttpServlet {
             logger.info("Starting game {} (Setting state to ACTIVE)", gameId);
             game.setState(GameState.ACTIVE);
             game.update();
+            eventDAO.insert(new Event(-1, game.getId(), login.getUserId(), "", EventType.GAME_STARTED,
+                    EventStatus.GAME, new Timestamp(System.currentTimeMillis())));
         }
     }
 }
