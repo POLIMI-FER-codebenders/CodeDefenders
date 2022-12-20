@@ -107,7 +107,8 @@ public class GenerateNewUserAPI extends HttpServlet {
         } while (userRepository.getUserByName(newName).isPresent() || userRepository.getUserByEmail(email).isPresent());
         PrintWriter out = response.getWriter();
         UserEntity newUser = new UserEntity(newName, "EXTERNAL_USER", email, true);
-        newUser.setToken(userRepository.generateNewUserToken());
+        newUser.setApiToken(userRepository.generateNewUserToken());
+        newUser.setFrontendToken(userRepository.generateNewUserToken());
         try {
             userRepository.insert(newUser).get(); //If present operation succeeded, so if operation failed this throws NoSuchElementException
             newUser = userRepository.getUserByName(newName).get();
@@ -116,7 +117,7 @@ public class GenerateNewUserAPI extends HttpServlet {
             JsonObject root = new JsonObject();
             root.add("userId", gson.toJsonTree(newUser.getId(), Integer.class));
             root.add("username", gson.toJsonTree(newUser.getUsername(), String.class));
-            root.add("token", gson.toJsonTree(newUser.getToken(), String.class));
+            root.add("token", gson.toJsonTree(newUser.getFrontendToken(), String.class));
             out.print(new Gson().toJson(root));
             out.flush();
         } catch (NoSuchElementException e) {

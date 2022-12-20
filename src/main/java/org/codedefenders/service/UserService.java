@@ -190,7 +190,8 @@ public class UserService {
             result = "Could not create user. Email has already been used. You can reset your password.";
         } else {
             UserEntity newUser = new UserEntity(username, UserEntity.encodePassword(password), email);
-            newUser.setToken(userRepo.generateNewUserToken());
+            newUser.setApiToken(userRepo.generateNewUserToken());
+            newUser.setFrontendToken(userRepo.generateNewUserToken());
             if (!userRepo.insert(newUser).isPresent()) {
                 // TODO: How about some error handling?
                 result = "Could not create user.";
@@ -275,8 +276,13 @@ public class UserService {
             return Optional.of("Error. User " + userId + " cannot be retrieved from database.");
         }
         UserEntity user = u.get();
-        if(Objects.isNull(user.getToken())) {
-            user.setToken(userRepo.generateNewUserToken());
+        if (Objects.isNull(user.getApiToken()) || Objects.isNull(user.getFrontendToken())) {
+            if (Objects.isNull(user.getApiToken())) {
+                user.setApiToken(userRepo.generateNewUserToken());
+            }
+            if (Objects.isNull(user.getFrontendToken())) {
+                user.setFrontendToken(userRepo.generateNewUserToken());
+            }
             if (!userRepo.update(user)) {
                 return Optional.of("Error trying to update info for user " + userId + "!");
             }
@@ -284,6 +290,7 @@ public class UserService {
         }
         return Optional.empty();
     }
+
     /**
      * For {@link org.codedefenders.servlets.registration.PasswordServlet#doPost(HttpServletRequest, HttpServletResponse)}
      * {@code case "resetPassword"}.

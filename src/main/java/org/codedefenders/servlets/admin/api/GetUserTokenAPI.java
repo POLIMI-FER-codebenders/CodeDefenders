@@ -93,7 +93,7 @@ public class GetUserTokenAPI extends HttpServlet {
             response.setContentType("application/json");
             Gson gson = new Gson();
             JsonObject root = new JsonObject();
-            root.add("token", gson.toJsonTree(user.get().getToken(), String.class));
+            root.add("token", gson.toJsonTree(user.get().getApiToken(), String.class));
             out.print(new Gson().toJson(root));
             out.flush();
         } else {

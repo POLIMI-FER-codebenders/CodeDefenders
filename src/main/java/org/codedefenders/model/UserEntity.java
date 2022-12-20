@@ -46,7 +46,8 @@ public class UserEntity implements Serializable {
     private boolean active;
     private boolean allowContact;
     private KeyMap keyMap;
-    private String token;
+    private String apiToken;
+    private String frontendToken;
     private boolean external;
 
     public UserEntity(String username) {
@@ -70,10 +71,10 @@ public class UserEntity implements Serializable {
     }
 
     public UserEntity(int id, String username, String encodedPassword, String email, boolean external) {
-        this(id, username, encodedPassword, email, false, true, false, KeyMap.DEFAULT, null, external);
+        this(id, username, encodedPassword, email, false, true, false, KeyMap.DEFAULT, null, null, external);
     }
     public UserEntity(int id, String username, String encodedPassword, String email, boolean validated,
-            boolean active, boolean allowContact, KeyMap keyMap, String token, boolean external) {
+                      boolean active, boolean allowContact, KeyMap keyMap, String apiToken, String frontendToken, boolean external) {
         this.id = id;
         this.username = username;
         this.encodedPassword = encodedPassword;
@@ -82,7 +83,8 @@ public class UserEntity implements Serializable {
         this.active = active;
         this.allowContact = allowContact;
         this.keyMap = keyMap;
-        this.token = token;
+        this.apiToken = apiToken;
+        this.frontendToken = frontendToken;
         this.external = external;
     }
 
@@ -171,12 +173,20 @@ public class UserEntity implements Serializable {
         this.keyMap = keyMap;
     }
 
-    public String getToken() {
-        return token;
+    public String getApiToken() {
+        return apiToken;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setApiToken(String apiToken) {
+        this.apiToken = apiToken;
+    }
+
+    public String getFrontendToken() {
+        return frontendToken;
+    }
+
+    public void setFrontendToken(String frontendToken) {
+        this.frontendToken = frontendToken;
     }
 
     public boolean isExternal() {

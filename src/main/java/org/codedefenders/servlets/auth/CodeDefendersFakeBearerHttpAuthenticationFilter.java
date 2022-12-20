@@ -8,8 +8,12 @@ import javax.inject.Singleton;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.BearerToken;
 import org.apache.shiro.session.SessionException;
 import org.apache.shiro.subject.Subject;
+import org.codedefenders.auth.APIBearerToken;
+import org.codedefenders.auth.FrontendBearerToken;
 import org.codedefenders.beans.message.MessagesBean;
 import org.codedefenders.service.UserService;
 import org.slf4j.Logger;
@@ -23,6 +27,12 @@ public class CodeDefendersFakeBearerHttpAuthenticationFilter extends CodeDefende
     @Inject
     public CodeDefendersFakeBearerHttpAuthenticationFilter(MessagesBean messages, UserService userService) {
         super(messages, userService);
+    }
+
+    @Override
+    protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) {
+        BearerToken bearerToken = (BearerToken) super.createToken(request, response);
+        return new FrontendBearerToken(bearerToken.getToken(), bearerToken.getHost());
     }
 
     @Override
