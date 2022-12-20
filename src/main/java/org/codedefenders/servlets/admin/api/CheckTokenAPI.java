@@ -76,7 +76,7 @@ public class CheckTokenAPI extends HttpServlet {
         JsonObject root = new JsonObject();
         root.add("userId", gson.toJsonTree(user.getId(), Integer.class));
         root.add("username", gson.toJsonTree(user.getUsername(), String.class));
-        root.add("token", gson.toJsonTree(user.getToken(), String.class));
+        root.add("token", gson.toJsonTree(user.getApiToken(), String.class));
         out.print(new Gson().toJson(root));
         out.flush();
     }

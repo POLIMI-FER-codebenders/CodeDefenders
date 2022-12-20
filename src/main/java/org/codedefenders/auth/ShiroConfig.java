@@ -33,6 +33,7 @@ import org.apache.shiro.web.filter.mgt.DefaultFilterChainManager;
 import org.apache.shiro.web.filter.mgt.FilterChainManager;
 import org.apache.shiro.web.filter.mgt.FilterChainResolver;
 import org.apache.shiro.web.filter.mgt.PathMatchingFilterChainResolver;
+import org.apache.shiro.web.filter.session.NoSessionCreationFilter;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.mgt.WebSecurityManager;
 import org.codedefenders.servlets.auth.CodeDefendersBearerHttpAuthenticationFilter;
@@ -49,12 +50,13 @@ public class ShiroConfig {
 
     @Produces
     @Singleton
-    public WebSecurityManager getSecurityManager(CodeDefendersRealm formAuthenticatingRealm, CodeDefendersBearerHttpAuthenticatingRealm bearerHttpAuthenticatingRealm) {
+    public WebSecurityManager getSecurityManager(CodeDefendersRealm formAuthenticatingRealm, CodeDefendersAPIBearerHttpAuthenticatingRealm apiBearerHttpAuthenticatingRealm,
+                                                 CodeDefendersFrontendBearerHttpAuthenticatingRealm frontendBearerHttpAuthenticatingRealm) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-        ModularRealmAuthenticator authenticator=new ModularRealmAuthenticator();
+        ModularRealmAuthenticator authenticator = new ModularRealmAuthenticator();
         authenticator.setAuthenticationStrategy(new FirstSuccessfulStrategy());
         securityManager.setAuthenticator(authenticator);
-        securityManager.setRealms(Arrays.asList(formAuthenticatingRealm,bearerHttpAuthenticatingRealm));
+        securityManager.setRealms(Arrays.asList(formAuthenticatingRealm, apiBearerHttpAuthenticatingRealm, frontendBearerHttpAuthenticatingRealm));
         securityManager.setCacheManager(new MemoryConstrainedCacheManager());
         return securityManager;
     }
@@ -71,7 +73,7 @@ public class ShiroConfig {
          * This filter uses the form data to check the user given the configured realms
          */
         final String AUTHENTICATION = "authc";
-        final String AUTHENTICATION_API = "authc[permissive], authcBearer";
+        final String AUTHENTICATION_API = "authc[permissive], noSession, authcBearer";
         final String AUTHENTICATION_ADMIN = AUTHENTICATION + ", roles[admin]";
         final String AUTHENTICATION_API_ADMIN = AUTHENTICATION_API + ", roles[admin]";
 
@@ -84,6 +86,7 @@ public class ShiroConfig {
         fcMan.addFilter("authcBearer", authcBearer);
         fcMan.addFilter("authcBearerFake", authcBearerFake);
         fcMan.addFilter("authc", authc);
+        fcMan.addFilter("noSession", new NoSessionCreationFilter());
         // Additional 'default' filter e.g. `roles[…]` are also available
 
 

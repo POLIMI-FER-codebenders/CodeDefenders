@@ -28,11 +28,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.BearerToken;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.BearerHttpAuthenticationFilter;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
+import org.codedefenders.auth.APIBearerToken;
 import org.codedefenders.auth.CodeDefendersRealm;
 import org.codedefenders.beans.message.MessagesBean;
 import org.codedefenders.service.UserService;
@@ -110,6 +112,12 @@ public class CodeDefendersBearerHttpAuthenticationFilter extends BearerHttpAuthe
         }
 
         return false;
+    }
+
+    @Override
+    protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) {
+        BearerToken bearerToken = (BearerToken) super.createToken(request, response);
+        return new APIBearerToken(bearerToken.getToken(), bearerToken.getHost());
     }
 
     @Override
