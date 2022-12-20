@@ -20,9 +20,7 @@ package org.codedefenders.servlets.api;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -34,34 +32,20 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.codedefenders.auth.CodeDefendersAuth;
 import org.codedefenders.beans.game.MeleeScoreboardBean;
-import org.codedefenders.beans.game.ScoreItem;
 import org.codedefenders.beans.game.ScoreboardBean;
+import org.codedefenders.beans.game.ScoreboardCacheBean;
 import org.codedefenders.database.GameDAO;
-import org.codedefenders.database.MutantDAO;
-import org.codedefenders.database.TestDAO;
-import org.codedefenders.dto.api.AttackerScore;
-import org.codedefenders.dto.api.DefenderScore;
-import org.codedefenders.dto.api.DuelsCount;
-import org.codedefenders.dto.api.MeleeScore;
-import org.codedefenders.dto.api.MeleeScoreboard;
-import org.codedefenders.dto.api.MultiplayerScoreboard;
-import org.codedefenders.dto.api.MutantsCount;
-import org.codedefenders.dto.api.TestsCount;
 import org.codedefenders.game.AbstractGame;
 import org.codedefenders.game.Test;
 import org.codedefenders.game.multiplayer.MeleeGame;
 import org.codedefenders.game.multiplayer.MultiplayerGame;
-import org.codedefenders.game.multiplayer.PlayerScore;
 import org.codedefenders.game.scoring.ScoreCalculator;
-import org.codedefenders.model.Player;
-import org.codedefenders.model.UserEntity;
 import org.codedefenders.persistence.database.SettingsRepository;
 import org.codedefenders.persistence.database.UserRepository;
 import org.codedefenders.service.UserService;
 import org.codedefenders.service.game.GameService;
 import org.codedefenders.servlets.admin.api.GetUserTokenAPI;
 import org.codedefenders.servlets.util.APIUtils;
-import org.codedefenders.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.MissingRequiredPropertiesException;
@@ -90,25 +74,7 @@ public class GameAPI extends HttpServlet {
         }
     };
     @Inject
-    CodeDefendersAuth login;
-    @Inject
-    GameService gameService;
-    @Inject
-    SettingsRepository settingsRepository;
-    @Inject
-    UserRepository userRepository;
-    @Inject
-    UserService userService;
-    @Inject
-    ScoreboardBean scoreboardBean;
-    @Inject
-    MeleeScoreboardBean meleeScoreboardBean;
-    @Inject
-    private ScoreCalculator scoreCalculator;
-
-    private static int[] slashStringToArray(String s) {
-        return Arrays.stream(s.split(" / ")).mapToInt(Integer::valueOf).toArray();
-    }
+    ScoreboardCacheBean scoreboardCacheBean;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -126,9 +92,9 @@ public class GameAPI extends HttpServlet {
             Gson gson = new Gson();
             JsonElement scoreboardJson;
             if (abstractGame instanceof MultiplayerGame) {
-                scoreboardJson = gson.toJsonTree(getMultiplayerScoreboard(abstractGame));
+                scoreboardJson = gson.toJsonTree(scoreboardCacheBean.getMultiplayerScoreboard((MultiplayerGame) abstractGame));
             } else if (abstractGame instanceof MeleeGame) {
-                scoreboardJson = gson.toJsonTree(getMeleeScoreboard(abstractGame));
+                scoreboardJson = gson.toJsonTree(scoreboardCacheBean.getMeleeScoreboard((MeleeGame) abstractGame));
             } else {
                 APIUtils.respondJsonError(response, "Specified game is neither battleground nor melee");
                 return;
@@ -144,82 +110,5 @@ public class GameAPI extends HttpServlet {
             out.print(new Gson().toJson(root));
             out.flush();
         }
-    }
-
-    public MeleeScoreboard getMeleeScoreboard(AbstractGame abstractGame) {
-        MeleeGame game = (MeleeGame) abstractGame;
-        MeleeScoreboard scoreboard = new MeleeScoreboard();
-        meleeScoreboardBean.setGameId(game.getId());
-        meleeScoreboardBean.setScores(scoreCalculator.getMutantScores(game.getId()), scoreCalculator.getTestScores(game.getId()), scoreCalculator.getDuelScores(game.getId()));
-        meleeScoreboardBean.setPlayers(game.getPlayers());
-        for (ScoreItem scoreItem : meleeScoreboardBean.getSortedScoreItems()) {
-            scoreboard.addPlayer(new MeleeScore(scoreItem.getUser().getName(), scoreItem.getUser().getId(), scoreItem.getAttackScore().getPlayerId(),
-                    scoreItem.getAttackScore().getTotalScore() + scoreItem.getDefenseScore().getTotalScore() + scoreItem.getDuelScore().getTotalScore(),
-                    scoreItem.getAttackScore().getTotalScore(), scoreItem.getDefenseScore().getTotalScore(), scoreItem.getDuelScore().getTotalScore()));
-        }
-        return scoreboard;
-    }
-
-    public MultiplayerScoreboard getMultiplayerScoreboard(AbstractGame abstractGame) {
-        MultiplayerScoreboard scoreboard = new MultiplayerScoreboard();
-        MultiplayerGame game = (MultiplayerGame) abstractGame;
-        scoreboardBean.setGameId(game.getId());
-        scoreboardBean.setScores(game.getMutantScores(), game.getTestScores());
-        scoreboardBean.setPlayers(game.getAttackerPlayers(), game.getDefenderPlayers());
-        Map<Integer, PlayerScore> mutantScores = scoreboardBean.getMutantsScores();
-        Map<Integer, PlayerScore> testScores = scoreboardBean.getTestScores();
-        final List<Player> attackers = scoreboardBean.getAttackers();
-        final List<Player> defenders = scoreboardBean.getDefenders();
-
-        int[] mki;
-        int[] mdi;
-        //battleground attackers
-        PlayerScore zeroDummyScore = new PlayerScore(-1);
-        zeroDummyScore.setMutantKillInformation("0 / 0 / 0");
-        zeroDummyScore.setDuelInformation("0 / 0 / 0");
-        for (Player attacker : attackers) {
-            int playerId = attacker.getId();
-            UserEntity attackerUser = attacker.getUser();
-            if (attackerUser.getId() == Constants.DUMMY_ATTACKER_USER_ID && MutantDAO.getMutantsByGameAndUser(scoreboardBean.getGameId(), attackerUser.getId()).isEmpty()) {
-                continue;
-            }
-
-            PlayerScore mutantsScore = mutantScores.getOrDefault(playerId, zeroDummyScore);
-            PlayerScore testsScore = testScores.getOrDefault(playerId, zeroDummyScore);
-            mki = slashStringToArray(mutantsScore.getMutantKillInformation());
-            mdi = slashStringToArray(mutantsScore.getDuelInformation());
-            scoreboard.addAttacker(new AttackerScore(attackerUser.getUsername(), attackerUser.getId(), playerId, mutantsScore.getTotalScore() + testsScore.getTotalScore(),
-                    new DuelsCount(mdi[0], mdi[1], mdi[2]), new MutantsCount(mki[0], mki[1], mki[2])));
-        }
-
-        //battleground attacker total
-        mki = slashStringToArray(mutantScores.getOrDefault(-1, zeroDummyScore).getMutantKillInformation());
-        mdi = slashStringToArray(mutantScores.getOrDefault(-1, zeroDummyScore).getDuelInformation());
-        scoreboard.setAttackersTotal(
-                new AttackerScore("Total", -1, -1, mutantScores.getOrDefault(-1, zeroDummyScore).getTotalScore() + testScores.getOrDefault(-2, zeroDummyScore).getTotalScore(),
-                        new DuelsCount(mdi[0], mdi[1], mdi[2]), new MutantsCount(mki[0], mki[1], mki[2])));
-
-        //battleground defenders
-        for (Player defender : defenders) {
-            int playerId = defender.getId();
-            UserEntity defenderUser = defender.getUser();
-
-            if (defenderUser.getId() == Constants.DUMMY_DEFENDER_USER_ID && TestDAO.getTestsForGameAndUser(scoreboardBean.getGameId(), defenderUser.getId()).isEmpty()) {
-                continue;
-            }
-
-            PlayerScore testsScore = testScores.getOrDefault(playerId, zeroDummyScore);
-            int killing = Integer.parseInt(testsScore.getMutantKillInformation());
-            mdi = slashStringToArray(testsScore.getDuelInformation());
-            scoreboard.addDefender(new DefenderScore(defenderUser.getUsername(), defenderUser.getId(), playerId, testsScore.getTotalScore(), new DuelsCount(mdi[0], mdi[1], mdi[2]),
-                    new TestsCount(killing, testsScore.getQuantity() - killing)));
-        }
-
-        //battleground defenders total
-        int killing = Integer.parseInt(testScores.getOrDefault(-1, zeroDummyScore).getMutantKillInformation());
-        mdi = slashStringToArray(testScores.getOrDefault(-1, zeroDummyScore).getDuelInformation());
-        scoreboard.setDefendersTotal(new DefenderScore("Total", -1, -1, testScores.getOrDefault(-1, zeroDummyScore).getTotalScore(), new DuelsCount(mdi[0], mdi[1], mdi[2]),
-                new TestsCount(killing, testScores.getOrDefault(-1, zeroDummyScore).getQuantity() - killing)));
-        return scoreboard;
     }
 }

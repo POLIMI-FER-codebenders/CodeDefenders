@@ -5,27 +5,13 @@ public class Event {
     private String message;
     private String type;
     private long timestamp;
+    private Scoreboard scoreboard;
 
-    public Event(int userId, String message, String type, long timestamp) {
+    public Event(int userId, String message, String type, long timestamp, Scoreboard scoreboard) {
         this.userId = userId;
         this.message = message;
         this.type = type;
         this.timestamp = timestamp;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
+        this.scoreboard = scoreboard;
     }
 }
