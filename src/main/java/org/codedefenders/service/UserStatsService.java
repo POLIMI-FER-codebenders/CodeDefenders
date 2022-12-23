@@ -33,7 +33,9 @@ public class UserStatsService {
                 dao.getAveragePointsMutantByUser(userId),
                 dao.getTotalPointsMutantByUser(userId),
                 dao.getAttackerGamesByUser(userId),
-                dao.getDefenderGamesByUser(userId)
+                dao.getDefenderGamesByUser(userId),
+                dao.getNumEquivalentMutantsByUser(userId),
+                dao.getTestKillCount(userId)
         );
     }
 }

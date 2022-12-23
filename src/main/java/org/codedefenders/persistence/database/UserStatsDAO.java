@@ -69,6 +69,24 @@ public class UserStatsDAO {
         }
     }
 
+    public int getNumEquivalentMutantsByUser(int userId) {
+        final String query = "SELECT count(Mutant_ID) AS mutants "
+                + "FROM view_valid_mutants "
+                + "WHERE User_ID = ? "
+                + "AND (Equivalent = \"ASSUMED_YES\" "
+                + "  OR Equivalent = \"DECLARED_YES\");";
+        try {
+            return queryRunner.query(
+                    query,
+                    resultSet -> oneFromRS(resultSet, rs -> rs.getInt("mutants")),
+                    userId
+            ).orElse(0);
+        } catch (SQLException e) {
+            logger.error("SQLException while executing query", e);
+            throw new UncheckedSQLException("SQLException while executing query", e);
+        }
+    }
+
     /**
      * Fetches the amount of tests written by a user that killed mutants.
      *
@@ -98,6 +116,22 @@ public class UserStatsDAO {
             return queryRunner.query(
                     query,
                     resultSet -> oneFromRS(resultSet, rs -> rs.getInt("tests")),
+                    userId
+            ).orElse(0);
+        } catch (SQLException e) {
+            logger.error("SQLException while executing query", e);
+            throw new UncheckedSQLException("SQLException while executing query", e);
+        }
+    }
+
+    public int getTestKillCount(int userId) {
+        final String query = "SELECT sum(MutantsKilled) AS MutantsKilled "
+                + "FROM view_valid_tests "
+                + "WHERE Player_ID IN (SELECT ID as Player_ID FROM view_players WHERE User_ID = ?);";
+        try {
+            return queryRunner.query(
+                    query,
+                    resultSet -> oneFromRS(resultSet, rs -> rs.getInt("MutantsKilled")),
                     userId
             ).orElse(0);
         } catch (SQLException e) {
