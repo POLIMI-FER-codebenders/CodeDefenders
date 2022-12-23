@@ -32,13 +32,18 @@ import org.codedefenders.auth.CodeDefendersAuth;
 import org.codedefenders.beans.admin.AdminCreateGamesBean;
 import org.codedefenders.database.EventDAO;
 import org.codedefenders.database.GameDAO;
+import org.codedefenders.database.KillmapDAO;
 import org.codedefenders.dto.api.GameID;
+import org.codedefenders.execution.KillMap;
+import org.codedefenders.execution.KillMapProcessor;
 import org.codedefenders.game.AbstractGame;
 import org.codedefenders.game.GameState;
 import org.codedefenders.game.Test;
 import org.codedefenders.model.Event;
 import org.codedefenders.model.EventStatus;
 import org.codedefenders.model.EventType;
+import org.codedefenders.notification.INotificationService;
+import org.codedefenders.notification.events.server.game.GameStoppedEvent;
 import org.codedefenders.persistence.database.SettingsRepository;
 import org.codedefenders.persistence.database.UserRepository;
 import org.codedefenders.service.UserService;
@@ -77,6 +82,8 @@ public class EndGameAPI extends HttpServlet {
     AdminCreateGamesBean adminCreateGamesBean;
     @Inject
     EventDAO eventDAO;
+    @Inject
+    private INotificationService notificationService;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -96,9 +103,13 @@ public class EndGameAPI extends HttpServlet {
         } else {
             logger.info("Ending game {} (Setting state to FINISHED)", gameId);
             game.setState(GameState.FINISHED);
-            game.update();
-            eventDAO.insert(new Event(-1, game.getId(), login.getUserId(), "", EventType.GAME_FINISHED,
-                    EventStatus.GAME, new Timestamp(System.currentTimeMillis())));
+            eventDAO.insert(new Event(-1, game.getId(), login.getUserId(), "", EventType.GAME_FINISHED, EventStatus.GAME, new Timestamp(System.currentTimeMillis())));
+            if (game.update()) {
+                KillmapDAO.enqueueJob(new KillMapProcessor.KillMapJob(KillMap.KillMapType.GAME, gameId.getGameId()));
+            }
+            GameStoppedEvent gse = new GameStoppedEvent();
+            gse.setGameId(game.getId());
+            notificationService.post(gse);
         }
     }
 }

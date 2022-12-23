@@ -64,7 +64,7 @@
 <%
     gameHighlighting.setGameData(game.getMutants(), game.getTests());
     gameHighlighting.setFlaggingData(game.getMode(), game.getId());
-    gameHighlighting.setEnableFlagging(true);
+    gameHighlighting.setEnableFlagging(game.getState() == GameState.ACTIVE || game.getState() == GameState.GRACE_ONE);
     gameHighlighting.setCodeDivSelector("#cut-div");
 %>
 
@@ -82,7 +82,7 @@
 <%
     mutantAccordion.setMutantAccordionData(cut, user, game.getMutants());
     mutantAccordion.setFlaggingData(game.getMode(), game.getId());
-    mutantAccordion.setEnableFlagging(true);
+    gameHighlighting.setEnableFlagging(game.getState() == GameState.ACTIVE || game.getState() == GameState.GRACE_ONE);
     mutantAccordion.setViewDiff(game.getLevel() == GameLevel.EASY);
 %>
 --%>

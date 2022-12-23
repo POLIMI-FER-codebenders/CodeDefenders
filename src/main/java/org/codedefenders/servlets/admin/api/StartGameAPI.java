@@ -39,6 +39,9 @@ import org.codedefenders.game.Test;
 import org.codedefenders.model.Event;
 import org.codedefenders.model.EventStatus;
 import org.codedefenders.model.EventType;
+import org.codedefenders.notification.INotificationService;
+import org.codedefenders.notification.events.server.game.GameStartedEvent;
+import org.codedefenders.notification.events.server.game.GameStoppedEvent;
 import org.codedefenders.persistence.database.SettingsRepository;
 import org.codedefenders.persistence.database.UserRepository;
 import org.codedefenders.service.UserService;
@@ -77,6 +80,8 @@ public class StartGameAPI extends HttpServlet {
     AdminCreateGamesBean adminCreateGamesBean;
     @Inject
     EventDAO eventDAO;
+    @Inject
+    private INotificationService notificationService;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -99,6 +104,9 @@ public class StartGameAPI extends HttpServlet {
             game.update();
             eventDAO.insert(new Event(-1, game.getId(), login.getUserId(), "", EventType.GAME_STARTED,
                     EventStatus.GAME, new Timestamp(System.currentTimeMillis())));
+            GameStartedEvent gse = new GameStartedEvent();
+            gse.setGameId(game.getId());
+            notificationService.post(gse);
         }
     }
 }
