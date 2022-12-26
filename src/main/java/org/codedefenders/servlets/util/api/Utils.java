@@ -1,4 +1,4 @@
-package org.codedefenders.servlets.util;
+package org.codedefenders.servlets.util.api;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpStatus;
+import org.codedefenders.servlets.util.ServletUtils;
 import org.springframework.core.env.MissingRequiredPropertiesException;
 
 import com.google.gson.Gson;
@@ -38,7 +39,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
-public class APIUtils {
+public class Utils {
     public static void respondJsonError(HttpServletResponse response, String error, int status) throws IOException {
         response.setStatus(status);
         response.setContentType("application/json");

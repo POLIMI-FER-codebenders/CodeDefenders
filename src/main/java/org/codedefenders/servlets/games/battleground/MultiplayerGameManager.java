@@ -254,7 +254,7 @@ public class MultiplayerGameManager extends HttpServlet {
     }
 
     // This is package protected to enable testing
-    void triggerAutomaticMutantEquivalenceForGame(MultiplayerGame game) {
+    public void triggerAutomaticMutantEquivalenceForGame(MultiplayerGame game) {
         int threshold = game.getAutomaticMutantEquivalenceThreshold();
         if (threshold < 1) {
             // No need to check as this feature is disabled

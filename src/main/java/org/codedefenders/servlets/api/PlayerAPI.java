@@ -37,7 +37,7 @@ import org.codedefenders.game.Test;
 import org.codedefenders.model.Player;
 import org.codedefenders.service.game.GameService;
 import org.codedefenders.servlets.admin.api.GetUserTokenAPI;
-import org.codedefenders.servlets.util.APIUtils;
+import org.codedefenders.servlets.util.api.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.MissingRequiredPropertiesException;
@@ -75,14 +75,14 @@ public class PlayerAPI extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final Map<String, Object> params;
         try {
-            params = APIUtils.getParametersOrRespondJsonError(request, response, parameterTypes);
+            params = Utils.getParametersOrRespondJsonError(request, response, parameterTypes);
         } catch (MissingRequiredPropertiesException e) {
             return;
         }
         final Integer playerId = (Integer) params.get("playerId");
         Player player = PlayerDAO.getPlayer(playerId);
         if (player == null) {
-            APIUtils.respondJsonError(response, "Player with ID " + playerId + " not found", HttpServletResponse.SC_NOT_FOUND);
+            Utils.respondJsonError(response, "Player with ID " + playerId + " not found", HttpServletResponse.SC_NOT_FOUND);
         } else {
             Gson gson = new Gson();
             PrintWriter out = response.getWriter();

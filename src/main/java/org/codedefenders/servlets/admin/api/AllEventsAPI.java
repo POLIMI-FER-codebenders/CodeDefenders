@@ -25,7 +25,7 @@ import org.codedefenders.persistence.database.SettingsRepository;
 import org.codedefenders.persistence.database.UserRepository;
 import org.codedefenders.service.AuthService;
 import org.codedefenders.service.game.GameService;
-import org.codedefenders.servlets.util.APIUtils;
+import org.codedefenders.servlets.util.api.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.MissingRequiredPropertiesException;
@@ -58,7 +58,7 @@ public class AllEventsAPI extends HttpServlet {
             IOException {
         final Map<String, Object> params;
         try {
-            params = APIUtils.getParametersOrRespondJsonError(request, response, parameterTypes);
+            params = Utils.getParametersOrRespondJsonError(request, response, parameterTypes);
         } catch (MissingRequiredPropertiesException e) {
             return;
         }

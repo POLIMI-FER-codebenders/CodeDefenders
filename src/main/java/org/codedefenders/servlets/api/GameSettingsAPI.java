@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -31,12 +30,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.codedefenders.auth.CodeDefendersAuth;
 import org.codedefenders.beans.game.ScoreboardCacheBean;
-import org.codedefenders.dto.User;
-import org.codedefenders.dto.api.UserInfo;
+import org.codedefenders.database.GameDAO;
+import org.codedefenders.game.AbstractGame;
 import org.codedefenders.game.Test;
-import org.codedefenders.service.UserService;
-import org.codedefenders.service.UserStatsService;
+import org.codedefenders.game.multiplayer.MeleeGame;
+import org.codedefenders.game.multiplayer.MultiplayerGame;
 import org.codedefenders.service.game.GameService;
 import org.codedefenders.servlets.admin.api.GetUserTokenAPI;
 import org.codedefenders.servlets.util.api.Utils;
@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.env.MissingRequiredPropertiesException;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 /**
  * This {@link HttpServlet} offers an API for {@link Test tests}.
@@ -56,13 +57,13 @@ import com.google.gson.Gson;
  *
  * @author <a href="https://github.com/werli">Phil Werli</a>
  */
-@WebServlet("/api/user")
-public class UserAPI extends HttpServlet {
+@WebServlet("/api/game/settings")
+public class GameSettingsAPI extends HttpServlet {
 
     private static final Logger logger = LoggerFactory.getLogger(GetUserTokenAPI.class);
     final Map<String, Class<?>> parameterTypes = new HashMap<String, Class<?>>() {
         {
-            put("userId", Integer.class);
+            put("gameId", Integer.class);
         }
     };
     @Inject
@@ -70,9 +71,7 @@ public class UserAPI extends HttpServlet {
     @Inject
     GameService gameService;
     @Inject
-    UserStatsService userStatsService;
-    @Inject
-    UserService userService;
+    CodeDefendersAuth login;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -82,15 +81,33 @@ public class UserAPI extends HttpServlet {
         } catch (MissingRequiredPropertiesException e) {
             return;
         }
-        final Integer userId = (Integer) params.get("userId");
-        Optional<User> user = userService.getUserById(userId);
-        if (!user.isPresent()) {
-            Utils.respondJsonError(response, "User with ID " + userId + " not found", HttpServletResponse.SC_NOT_FOUND);
+        final Integer gameId = (Integer) params.get("gameId");
+        AbstractGame abstractGame = GameDAO.getGame(gameId);
+        if (abstractGame == null) {
+            Utils.respondJsonError(response, "Game with ID " + gameId + " not found", HttpServletResponse.SC_NOT_FOUND);
         } else {
-            UserInfo stats = UserInfo.fromUserStats(user.get().getName(), userStatsService.getStatsByUserId(userId));
+            Gson gson = new Gson();
+            String gameType;
+            int autoEquivalenceThreshold;
+            if (abstractGame instanceof MultiplayerGame) {
+                gameType = "MULTIPLAYER";
+                autoEquivalenceThreshold = ((MultiplayerGame) abstractGame).getAutomaticMutantEquivalenceThreshold();
+            } else if (abstractGame instanceof MeleeGame) {
+                gameType = "MELEE";
+                autoEquivalenceThreshold = ((MeleeGame) abstractGame).getAutomaticMutantEquivalenceThreshold();
+            } else {
+                Utils.respondJsonError(response, "Specified game is neither battleground nor melee");
+                return;
+            }
             PrintWriter out = response.getWriter();
             response.setContentType("application/json");
-            out.print(new Gson().toJson(stats));
+            JsonObject root = new JsonObject();
+            root.add("gameType", gson.toJsonTree(gameType, String.class));
+            root.add("gameLevel", gson.toJsonTree(abstractGame.getLevel()));
+            root.add("mutantValidatorLevel", gson.toJsonTree(abstractGame.getMutantValidatorLevel()));
+            root.add("maxAssertionsPerTest", gson.toJsonTree(abstractGame.getMaxAssertionsPerTest(), Integer.class));
+            root.add("autoEquivalenceThreshold", gson.toJsonTree(autoEquivalenceThreshold, Integer.class));
+            out.print(gson.toJson(root));
             out.flush();
         }
     }

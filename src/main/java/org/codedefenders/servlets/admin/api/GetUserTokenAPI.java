@@ -39,7 +39,7 @@ import org.codedefenders.persistence.database.SettingsRepository;
 import org.codedefenders.persistence.database.UserRepository;
 import org.codedefenders.service.UserService;
 import org.codedefenders.service.game.GameService;
-import org.codedefenders.servlets.util.APIUtils;
+import org.codedefenders.servlets.util.api.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.MissingRequiredPropertiesException;
@@ -82,7 +82,7 @@ public class GetUserTokenAPI extends HttpServlet {
             throws ServletException, IOException {
         final Map<String, Object> params;
         try {
-            params = APIUtils.getParametersOrRespondJsonError(request, response, parameterTypes);
+            params = Utils.getParametersOrRespondJsonError(request, response, parameterTypes);
         } catch (MissingRequiredPropertiesException e) {
             return;
         }
@@ -97,7 +97,7 @@ public class GetUserTokenAPI extends HttpServlet {
             out.print(new Gson().toJson(root));
             out.flush();
         } else {
-            APIUtils.respondJsonError(response, "User " + userId + " not found", HttpStatus.SC_NOT_FOUND);
+            Utils.respondJsonError(response, "User " + userId + " not found", HttpStatus.SC_NOT_FOUND);
         }
     }
 }

@@ -41,10 +41,9 @@ import org.codedefenders.game.AbstractGame;
 import org.codedefenders.game.Test;
 import org.codedefenders.game.multiplayer.MeleeGame;
 import org.codedefenders.game.multiplayer.MultiplayerGame;
-import org.codedefenders.service.game.AbstractGameService;
 import org.codedefenders.service.game.GameService;
 import org.codedefenders.servlets.admin.api.GetUserTokenAPI;
-import org.codedefenders.servlets.util.APIUtils;
+import org.codedefenders.servlets.util.api.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.MissingRequiredPropertiesException;
@@ -83,14 +82,14 @@ public class GameAPI extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final Map<String, Object> params;
         try {
-            params = APIUtils.getParametersOrRespondJsonError(request, response, parameterTypes);
+            params = Utils.getParametersOrRespondJsonError(request, response, parameterTypes);
         } catch (MissingRequiredPropertiesException e) {
             return;
         }
         final Integer gameId = (Integer) params.get("gameId");
         AbstractGame abstractGame = GameDAO.getGame(gameId);
         if (abstractGame == null) {
-            APIUtils.respondJsonError(response, "Game with ID " + gameId + " not found", HttpServletResponse.SC_NOT_FOUND);
+            Utils.respondJsonError(response, "Game with ID " + gameId + " not found", HttpServletResponse.SC_NOT_FOUND);
         } else {
             Gson gson = new Gson();
             JsonElement scoreboardJson;
@@ -99,7 +98,7 @@ public class GameAPI extends HttpServlet {
             } else if (abstractGame instanceof MeleeGame) {
                 scoreboardJson = gson.toJsonTree(scoreboardCacheBean.getMeleeScoreboard((MeleeGame) abstractGame));
             } else {
-                APIUtils.respondJsonError(response, "Specified game is neither battleground nor melee");
+                Utils.respondJsonError(response, "Specified game is neither battleground nor melee");
                 return;
             }
             List<MutantInfo> mutantInfos = gameService.getMutants(login.getUserId(), gameId).stream().map(MutantInfo::fromMutantDTO).collect(Collectors.toList());
