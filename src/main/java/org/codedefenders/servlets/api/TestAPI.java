@@ -91,7 +91,7 @@ import static org.codedefenders.util.Constants.TEST_GENERIC_ERROR_MESSAGE;
  *
  * @author <a href="https://github.com/werli">Phil Werli</a>
  */
-@WebServlet(org.codedefenders.util.Paths.API_TEST)
+@WebServlet({org.codedefenders.util.Paths.API_TEST,"/api/game/test"})
 public class TestAPI extends HttpServlet {
     private static final Logger logger = LoggerFactory.getLogger(TestAPI.class);
     @Inject

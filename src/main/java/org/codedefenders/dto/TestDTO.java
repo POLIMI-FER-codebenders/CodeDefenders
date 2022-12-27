@@ -83,7 +83,11 @@ public class TestDTO {
     }
 
     public String getSource() {
-        return source;
+        if (canView) {
+            return source;
+        } else {
+            return null;
+        }
     }
 
     public int getId() {

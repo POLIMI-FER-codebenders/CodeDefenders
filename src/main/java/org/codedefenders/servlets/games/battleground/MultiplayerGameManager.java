@@ -1052,7 +1052,7 @@ public class MultiplayerGameManager extends HttpServlet {
      * @param mutantToValidate The mutant why try to find a killing test for
      * @return whether the mutant is killable or not/cannot be validated
      */
-    boolean isMutantKillableByOtherTests(Mutant mutantToValidate) {
+    public boolean isMutantKillableByOtherTests(Mutant mutantToValidate) {
         int validationThreshold = AdminDAO.getSystemSetting(FAILED_DUEL_VALIDATION_THRESHOLD).getIntValue();
         if (validationThreshold <= 0) {
             return false;

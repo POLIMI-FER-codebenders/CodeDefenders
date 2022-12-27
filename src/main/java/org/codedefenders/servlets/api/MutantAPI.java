@@ -90,7 +90,7 @@ import static org.codedefenders.util.Constants.MUTANT_UNCOMPILABLE_MESSAGE;
  *
  * @author <a href="https://github.com/werli">Phil Werli</a>
  */
-@WebServlet(org.codedefenders.util.Paths.API_MUTANT)
+@WebServlet({org.codedefenders.util.Paths.API_MUTANT,"/api/game/mutant"})
 public class MutantAPI extends HttpServlet {
 
     private static final Logger logger = LoggerFactory.getLogger(MutantAPI.class);

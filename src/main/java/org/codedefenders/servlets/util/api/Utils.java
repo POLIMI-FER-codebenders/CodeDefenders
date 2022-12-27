@@ -135,8 +135,7 @@ public class Utils {
                         }
                         if (!missingFields.isEmpty()) {
                             throw new JsonParseException(
-                                    String.format("Missing required fields %s for %s", missingFields,
-                                            rawType.getName()));
+                                    String.format("Missing required fields %s", missingFields));
                         }
                     }
                     return baseAdapter.fromJsonTree(jsonElement);
