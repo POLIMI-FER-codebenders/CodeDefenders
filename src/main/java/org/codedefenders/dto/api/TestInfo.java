@@ -1,8 +1,11 @@
 package org.codedefenders.dto.api;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.codedefenders.dto.TestDTO;
+import org.codedefenders.game.Mutant;
+import org.codedefenders.game.Test;
 
 public class TestInfo {
     Integer id;
@@ -23,5 +26,11 @@ public class TestInfo {
 
     public static TestInfo fromTestDTO(TestDTO test) {
         return new TestInfo(test.getId(), test.getPlayerId(), test.getPoints(), test.getLinesCovered(), test.getCoveredMutantIds(), test.getKilledMutantIds());
+    }
+
+    public static TestInfo fromTest(Test test, List<Mutant> mutants) {
+        return new TestInfo(test.getId(), test.getPlayerId(), test.getScore(), test.getLineCoverage().getLinesCovered(),
+                test.getCoveredMutants(mutants).stream().map(Mutant::getId).collect(Collectors.toList()),
+                test.getKilledMutants().stream().map(Mutant::getId).collect(Collectors.toList()));
     }
 }

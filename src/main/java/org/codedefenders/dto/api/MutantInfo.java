@@ -14,6 +14,15 @@ public class MutantInfo {
     Integer killingTestId;
     Boolean canMarkEquivalent;
 
+    public MutantInfo(Integer id, Integer playerId, Mutant.State state, List<Integer> mutatedLines, Integer points, Integer killingTestId) {
+        this.id = id;
+        this.playerId = playerId;
+        this.state = state;
+        this.mutatedLines = mutatedLines;
+        this.points = points;
+        this.killingTestId = killingTestId;
+    }
+
     public MutantInfo(Integer id, Integer playerId, Mutant.State state, List<Integer> mutatedLines, Integer points, Integer killingTestId, Boolean canMarkEquivalent) {
         this.id = id;
         this.playerId = playerId;
@@ -27,5 +36,10 @@ public class MutantInfo {
     public static MutantInfo fromMutantDTO(MutantDTO mutant) {
         return new MutantInfo(mutant.getId(), mutant.getPlayerId(), mutant.getState(), mutant.getLines(), mutant.getPoints(), mutant.getKilledByTestId(),
                 mutant.isCanMarkEquivalent());
+    }
+
+    public static MutantInfo fromMutant(Mutant mutant) {
+        return new MutantInfo(mutant.getId(), mutant.getPlayerId(), mutant.getState(), mutant.getLines(), mutant.getScore(), mutant.getKillingTest() != null ?
+                mutant.getKillingTest().getId() : null);
     }
 }

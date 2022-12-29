@@ -35,7 +35,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.codedefenders.auth.CodeDefendersAuth;
 import org.codedefenders.beans.game.ScoreboardCacheBean;
 import org.codedefenders.database.GameDAO;
+import org.codedefenders.dto.api.GameInfo;
 import org.codedefenders.dto.api.MutantInfo;
+import org.codedefenders.dto.api.Scoreboard;
 import org.codedefenders.dto.api.TestInfo;
 import org.codedefenders.game.AbstractGame;
 import org.codedefenders.game.Test;
@@ -49,8 +51,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.env.MissingRequiredPropertiesException;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  * This {@link HttpServlet} offers an API for {@link Test tests}.
@@ -91,12 +91,11 @@ public class GameAPI extends HttpServlet {
         if (abstractGame == null) {
             Utils.respondJsonError(response, "Game with ID " + gameId + " not found", HttpServletResponse.SC_NOT_FOUND);
         } else {
-            Gson gson = new Gson();
-            JsonElement scoreboardJson;
+            Scoreboard scoreboard;
             if (abstractGame instanceof MultiplayerGame) {
-                scoreboardJson = gson.toJsonTree(scoreboardCacheBean.getMultiplayerScoreboard((MultiplayerGame) abstractGame));
+                scoreboard = scoreboardCacheBean.getMultiplayerScoreboard((MultiplayerGame) abstractGame);
             } else if (abstractGame instanceof MeleeGame) {
-                scoreboardJson = gson.toJsonTree(scoreboardCacheBean.getMeleeScoreboard((MeleeGame) abstractGame));
+                scoreboard = scoreboardCacheBean.getMeleeScoreboard((MeleeGame) abstractGame);
             } else {
                 Utils.respondJsonError(response, "Specified game is neither battleground nor melee");
                 return;
@@ -105,13 +104,7 @@ public class GameAPI extends HttpServlet {
             List<TestInfo> testInfos = gameService.getTests(login.getUserId(), gameId).stream().map(TestInfo::fromTestDTO).collect(Collectors.toList());
             PrintWriter out = response.getWriter();
             response.setContentType("application/json");
-            JsonObject root = new JsonObject();
-            root.add("classId", gson.toJsonTree(abstractGame.getClassId(), Integer.class));
-            root.add("state", gson.toJsonTree(abstractGame.getState()));
-            root.add("mutants", gson.toJsonTree(mutantInfos));
-            root.add("tests", gson.toJsonTree(testInfos));
-            root.add("scoreboard", scoreboardJson);
-            out.print(new Gson().toJson(root));
+            out.print(new Gson().toJson(new GameInfo(abstractGame.getId(), abstractGame.getClassId(), abstractGame.getState(), mutantInfos, testInfos, scoreboard)));
             out.flush();
         }
     }
