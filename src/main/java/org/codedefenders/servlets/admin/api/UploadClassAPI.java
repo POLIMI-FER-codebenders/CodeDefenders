@@ -47,7 +47,7 @@ import org.codedefenders.persistence.database.SettingsRepository;
 import org.codedefenders.persistence.database.UserRepository;
 import org.codedefenders.service.UserService;
 import org.codedefenders.service.game.GameService;
-import org.codedefenders.servlets.util.APIUtils;
+import org.codedefenders.servlets.util.api.Utils;
 import org.codedefenders.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,7 +109,7 @@ public class UploadClassAPI extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final ClassUpload uploadedClass;
         try {
-            uploadedClass = (ClassUpload) APIUtils.parsePostOrRespondJsonError(request, response, ClassUpload.class);
+            uploadedClass = (ClassUpload) Utils.parsePostOrRespondJsonError(request, response, ClassUpload.class);
         } catch (JsonParseException e) {
             return;
         }
@@ -117,15 +117,15 @@ public class UploadClassAPI extends HttpServlet {
         String source = uploadedClass.getSource();
 
         if (!name.endsWith(".java")) {
-            APIUtils.respondJsonError(response, "Class upload failed. The class under test must be a .java file.");
+            Utils.respondJsonError(response, "Class upload failed. The class under test must be a .java file.");
             return;
         }
         if (!validateAlias(name)) {
-            APIUtils.respondJsonError(response, "Class upload failed. Name must not contain whitespaces or special characters.");
+            Utils.respondJsonError(response, "Class upload failed. Name must not contain whitespaces or special characters.");
             return;
         }
         if (source == null || source.trim().isEmpty()) {
-            APIUtils.respondJsonError(response, "Class source cannot be empty.");
+            Utils.respondJsonError(response, "Class source cannot be empty.");
             return;
         }
 
@@ -152,7 +152,7 @@ public class UploadClassAPI extends HttpServlet {
         try {
             cutJavaFilePath = FileUtils.storeFile(cutDir, name, fileContent).toString();
         } catch (IOException e) {
-            APIUtils.respondJsonError(response, "Class upload failed. Could not store java file\n" + e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            Utils.respondJsonError(response, "Class upload failed. Could not store java file\n" + e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             abortRequestAndCleanUp(cutDir);
             return;
         }
@@ -161,11 +161,11 @@ public class UploadClassAPI extends HttpServlet {
         try {
             cutClassFilePath = Compiler.compileJavaFileForContent(cutJavaFilePath, fileContent);
         } catch (CompileException e) {
-            APIUtils.respondJsonError(response, cutJavaFilePath + " " + fileContent + "Class upload failed. Could not compile " + name + "!\n" + e.getMessage());
+            Utils.respondJsonError(response, cutJavaFilePath + " " + fileContent + "Class upload failed. Could not compile " + name + "!\n" + e.getMessage());
             abortRequestAndCleanUp(cutDir);
             return;
         } catch (IllegalStateException e) {
-            APIUtils.respondJsonError(response, "SEVERE ERROR. Could not find Java compiler. Please reconfigure your " + "installed version.\n" + e,
+            Utils.respondJsonError(response, "SEVERE ERROR. Could not find Java compiler. Please reconfigure your " + "installed version.\n" + e,
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             abortRequestAndCleanUp(cutDir);
             return;
@@ -175,7 +175,7 @@ public class UploadClassAPI extends HttpServlet {
         try {
             classQualifiedName = FileUtils.getFullyQualifiedName(cutClassFilePath);
         } catch (IOException e) {
-            APIUtils.respondJsonError(response, "Class upload failed. Could not get fully qualified name for " + name + "\n" + e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            Utils.respondJsonError(response, "Class upload failed. Could not get fully qualified name for " + name + "\n" + e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             abortRequestAndCleanUp(cutDir);
             return;
         }
@@ -185,7 +185,7 @@ public class UploadClassAPI extends HttpServlet {
         try {
             cutId = GameClassDAO.storeClass(cut);
         } catch (Exception e) {
-            APIUtils.respondJsonError(response, "Class upload failed. Could not store class to database.", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            Utils.respondJsonError(response, "Class upload failed. Could not store class to database.", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             abortRequestAndCleanUp(cutDir);
             return;
         }

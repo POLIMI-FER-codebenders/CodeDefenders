@@ -146,6 +146,10 @@
                 <span class="d-inline-block px-2 ms-2 border">${profile.user.email}</span>
             </p>
             <p>
+                Your API token:
+                <span class="d-inline-block px-2 ms-2 border">${profile.user.apiToken}</span>
+            </p>
+            <p>
                 Change your account information, password or delete your account in the
                 <a href="${pageContext.request.contextPath}${Paths.USER_SETTINGS}"
                    title="Edit or delete your CodeDefenders account.">account settings</a>.

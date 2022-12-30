@@ -6,7 +6,7 @@ public class NewGameRequest {
     private int classId;
     private List<Team> teams;
     private APIGameSettings settings;
-    private String returnUrl;
+    //private String returnUrl;
 
     public int getClassId() {
         return classId;
@@ -21,6 +21,7 @@ public class NewGameRequest {
     }
 
     public String getReturnUrl() {
-        return returnUrl;
+        return "";
+        //return returnUrl;
     }
 }

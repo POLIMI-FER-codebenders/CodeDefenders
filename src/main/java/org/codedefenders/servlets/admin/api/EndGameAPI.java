@@ -48,7 +48,7 @@ import org.codedefenders.persistence.database.SettingsRepository;
 import org.codedefenders.persistence.database.UserRepository;
 import org.codedefenders.service.UserService;
 import org.codedefenders.service.game.GameService;
-import org.codedefenders.servlets.util.APIUtils;
+import org.codedefenders.servlets.util.api.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,17 +89,17 @@ public class EndGameAPI extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final GameID gameId;
         try {
-            gameId = (GameID) APIUtils.parsePostOrRespondJsonError(request, response, GameID.class);
+            gameId = (GameID) Utils.parsePostOrRespondJsonError(request, response, GameID.class);
         } catch (JsonParseException e) {
             return;
         }
         AbstractGame game = GameDAO.getGame(gameId.getGameId());
         if (game == null) {
-            APIUtils.respondJsonError(response, "Game with ID " + gameId.getGameId() + " not found", HttpServletResponse.SC_NOT_FOUND);
+            Utils.respondJsonError(response, "Game with ID " + gameId.getGameId() + " not found", HttpServletResponse.SC_NOT_FOUND);
         } else if (login.getUserId() != game.getCreatorId()) {
-            APIUtils.respondJsonError(response, "Only the game's creator can end the game", HttpServletResponse.SC_BAD_REQUEST);
+            Utils.respondJsonError(response, "Only the game's creator can end the game", HttpServletResponse.SC_BAD_REQUEST);
         } else if (game.getState() != GameState.ACTIVE && game.getState() != GameState.GRACE_ONE && game.getState() != GameState.GRACE_TWO) {
-            APIUtils.respondJsonError(response, "Game cannot be ended since it has state " + game.getState(), HttpServletResponse.SC_BAD_REQUEST);
+            Utils.respondJsonError(response, "Game cannot be ended since it has state " + game.getState(), HttpServletResponse.SC_BAD_REQUEST);
         } else {
             logger.info("Ending game {} (Setting state to FINISHED)", gameId);
             game.setState(GameState.FINISHED);

@@ -20,10 +20,12 @@ public class UserStats {
 
     private final int attackerGames;
     private final int defenderGames;
+    private final int equivalentMutants;
+    private final int testKillCount;
 
     public UserStats(int userId, int killedMutants, int aliveMutants, int killingTests, int nonKillingTests,
                      double avgPointsTests, int totalPointsTests, double avgPointsMutants, int totalPointsMutants,
-                     int attackerGames, int defenderGames) {
+                     int attackerGames, int defenderGames, int equivalentMutants, int testKillCount) {
         this.userId = userId;
         this.killedMutants = killedMutants;
         this.aliveMutants = aliveMutants;
@@ -35,6 +37,8 @@ public class UserStats {
         this.totalPointsMutants = totalPointsMutants;
         this.attackerGames = attackerGames;
         this.defenderGames = defenderGames;
+        this.equivalentMutants = equivalentMutants;
+        this.testKillCount = testKillCount;
     }
 
     private int calcPercentage(int subject, int total) {
@@ -140,5 +144,13 @@ public class UserStats {
 
     public int getDefenderGames() {
         return defenderGames;
+    }
+
+    public int getEquivalentMutants() {
+        return equivalentMutants;
+    }
+
+    public int getTestKillCount() {
+        return testKillCount;
     }
 }

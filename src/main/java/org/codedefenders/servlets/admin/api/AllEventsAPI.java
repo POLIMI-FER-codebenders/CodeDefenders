@@ -14,51 +14,33 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.codedefenders.auth.CodeDefendersAuth;
-import org.codedefenders.beans.game.ScoreboardCacheBean;
 import org.codedefenders.database.EventDAO;
 import org.codedefenders.database.ScoreDAO;
 import org.codedefenders.dto.api.EventList;
 import org.codedefenders.dto.api.MultiplayerScoreboard;
 import org.codedefenders.model.Event;
-import org.codedefenders.persistence.database.SettingsRepository;
-import org.codedefenders.persistence.database.UserRepository;
 import org.codedefenders.service.AuthService;
-import org.codedefenders.service.game.GameService;
-import org.codedefenders.servlets.util.APIUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.codedefenders.servlets.util.api.Utils;
 import org.springframework.core.env.MissingRequiredPropertiesException;
 
 import com.google.gson.Gson;
 
 @WebServlet("/admin/api/events")
 public class AllEventsAPI extends HttpServlet {
-    private static final Logger logger = LoggerFactory.getLogger(CheckTokenAPI.class);
     final Map<String, Class<?>> parameterTypes = new HashMap<String, Class<?>>() {
         {
             put("fromTimestamp", Long.class);
         }
     };
     @Inject
-    CodeDefendersAuth login;
-    @Inject
-    GameService gameService;
-    @Inject
-    SettingsRepository settingsRepository;
-    @Inject
-    UserRepository userRepository;
-    @Inject
     AuthService authService;
-    @Inject
-    ScoreboardCacheBean scoreboardCacheBean;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException {
         final Map<String, Object> params;
         try {
-            params = APIUtils.getParametersOrRespondJsonError(request, response, parameterTypes);
+            params = Utils.getParametersOrRespondJsonError(request, response, parameterTypes);
         } catch (MissingRequiredPropertiesException e) {
             return;
         }

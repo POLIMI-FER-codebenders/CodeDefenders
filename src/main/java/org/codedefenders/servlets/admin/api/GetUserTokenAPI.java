@@ -32,16 +32,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpStatus;
-import org.codedefenders.auth.CodeDefendersAuth;
 import org.codedefenders.game.Test;
 import org.codedefenders.model.UserEntity;
-import org.codedefenders.persistence.database.SettingsRepository;
 import org.codedefenders.persistence.database.UserRepository;
 import org.codedefenders.service.UserService;
-import org.codedefenders.service.game.GameService;
-import org.codedefenders.servlets.util.APIUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.codedefenders.servlets.util.api.Utils;
 import org.springframework.core.env.MissingRequiredPropertiesException;
 
 import com.google.gson.Gson;
@@ -60,18 +55,11 @@ import com.google.gson.JsonObject;
 @WebServlet("/admin/api/auth/token")
 public class GetUserTokenAPI extends HttpServlet {
 
-    private static final Logger logger = LoggerFactory.getLogger(GetUserTokenAPI.class);
     final Map<String, Class<?>> parameterTypes = new HashMap<String, Class<?>>() {
         {
             put("userId", Integer.class);
         }
     };
-    @Inject
-    CodeDefendersAuth login;
-    @Inject
-    GameService gameService;
-    @Inject
-    SettingsRepository settingsRepository;
     @Inject
     UserRepository userRepository;
     @Inject
@@ -82,22 +70,27 @@ public class GetUserTokenAPI extends HttpServlet {
             throws ServletException, IOException {
         final Map<String, Object> params;
         try {
-            params = APIUtils.getParametersOrRespondJsonError(request, response, parameterTypes);
+            params = Utils.getParametersOrRespondJsonError(request, response, parameterTypes);
         } catch (MissingRequiredPropertiesException e) {
             return;
         }
         Integer userId = (Integer) params.get("userId");
+        userService.createTokenIfNotExist(userId);
         Optional<UserEntity> user = userRepository.getUserById(userId);
         PrintWriter out = response.getWriter();
         if (user.isPresent()) {
-            response.setContentType("application/json");
-            Gson gson = new Gson();
-            JsonObject root = new JsonObject();
-            root.add("token", gson.toJsonTree(user.get().getApiToken(), String.class));
-            out.print(new Gson().toJson(root));
-            out.flush();
+            if (user.get().isExternal()) {
+                response.setContentType("application/json");
+                Gson gson = new Gson();
+                JsonObject root = new JsonObject();
+                root.add("token", gson.toJsonTree(user.get().getApiToken(), String.class));
+                out.print(new Gson().toJson(root));
+                out.flush();
+            } else {
+                Utils.respondJsonError(response, "You don't have access to this user's token", HttpStatus.SC_FORBIDDEN);
+            }
         } else {
-            APIUtils.respondJsonError(response, "User " + userId + " not found", HttpStatus.SC_NOT_FOUND);
+            Utils.respondJsonError(response, "User " + userId + " not found", HttpStatus.SC_NOT_FOUND);
         }
     }
 }

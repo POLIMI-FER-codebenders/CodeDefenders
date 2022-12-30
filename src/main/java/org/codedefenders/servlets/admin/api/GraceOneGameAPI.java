@@ -41,12 +41,11 @@ import org.codedefenders.model.EventStatus;
 import org.codedefenders.model.EventType;
 import org.codedefenders.notification.INotificationService;
 import org.codedefenders.notification.events.server.game.GameGraceOneEvent;
-import org.codedefenders.notification.events.server.game.GameStoppedEvent;
 import org.codedefenders.persistence.database.SettingsRepository;
 import org.codedefenders.persistence.database.UserRepository;
 import org.codedefenders.service.UserService;
 import org.codedefenders.service.game.GameService;
-import org.codedefenders.servlets.util.APIUtils;
+import org.codedefenders.servlets.util.api.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,17 +86,17 @@ public class GraceOneGameAPI extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final GameID gameId;
         try {
-            gameId = (GameID) APIUtils.parsePostOrRespondJsonError(request, response, GameID.class);
+            gameId = (GameID) Utils.parsePostOrRespondJsonError(request, response, GameID.class);
         } catch (JsonParseException e) {
             return;
         }
         AbstractGame game = GameDAO.getGame(gameId.getGameId());
         if (game == null) {
-            APIUtils.respondJsonError(response, "Game with ID " + gameId.getGameId() + " not found", HttpServletResponse.SC_NOT_FOUND);
+            Utils.respondJsonError(response, "Game with ID " + gameId.getGameId() + " not found", HttpServletResponse.SC_NOT_FOUND);
         } else if (login.getUserId() != game.getCreatorId()) {
-            APIUtils.respondJsonError(response, "Only the game's creator can disable uploads", HttpServletResponse.SC_BAD_REQUEST);
+            Utils.respondJsonError(response, "Only the game's creator can disable uploads", HttpServletResponse.SC_BAD_REQUEST);
         } else if (game.getState() != GameState.ACTIVE) {
-            APIUtils.respondJsonError(response, "Uploads cannot be disabled since the game has state " + game.getState(), HttpServletResponse.SC_BAD_REQUEST);
+            Utils.respondJsonError(response, "Uploads cannot be disabled since the game has state " + game.getState(), HttpServletResponse.SC_BAD_REQUEST);
         } else {
             logger.info("Setting game {} state to GRACE_ONE", gameId);
             game.setState(GameState.GRACE_ONE);

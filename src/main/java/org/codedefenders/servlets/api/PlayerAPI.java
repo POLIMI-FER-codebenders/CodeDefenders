@@ -21,9 +21,7 @@ package org.codedefenders.servlets.api;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -34,20 +32,18 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.codedefenders.auth.CodeDefendersAuth;
 import org.codedefenders.beans.game.ScoreboardCacheBean;
-import org.codedefenders.database.GameDAO;
-import org.codedefenders.dto.api.GameInfo;
-import org.codedefenders.dto.api.MutantInfo;
-import org.codedefenders.dto.api.Scoreboard;
-import org.codedefenders.dto.api.TestInfo;
-import org.codedefenders.game.AbstractGame;
+import org.codedefenders.database.PlayerDAO;
 import org.codedefenders.game.Test;
-import org.codedefenders.game.multiplayer.MeleeGame;
-import org.codedefenders.game.multiplayer.MultiplayerGame;
+import org.codedefenders.model.Player;
 import org.codedefenders.service.game.GameService;
+import org.codedefenders.servlets.admin.api.GetUserTokenAPI;
 import org.codedefenders.servlets.util.api.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.MissingRequiredPropertiesException;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 /**
  * This {@link HttpServlet} offers an API for {@link Test tests}.
@@ -59,12 +55,13 @@ import com.google.gson.Gson;
  *
  * @author <a href="https://github.com/werli">Phil Werli</a>
  */
-@WebServlet("/api/game")
-public class GameAPI extends HttpServlet {
+@WebServlet("/api/player")
+public class PlayerAPI extends HttpServlet {
 
+    private static final Logger logger = LoggerFactory.getLogger(GetUserTokenAPI.class);
     final Map<String, Class<?>> parameterTypes = new HashMap<String, Class<?>>() {
         {
-            put("gameId", Integer.class);
+            put("playerId", Integer.class);
         }
     };
     @Inject
@@ -82,26 +79,18 @@ public class GameAPI extends HttpServlet {
         } catch (MissingRequiredPropertiesException e) {
             return;
         }
-        final Integer gameId = (Integer) params.get("gameId");
-        AbstractGame abstractGame = GameDAO.getGame(gameId);
-        if (abstractGame == null) {
-            Utils.respondJsonError(response, "Game with ID " + gameId + " not found", HttpServletResponse.SC_NOT_FOUND);
+        final Integer playerId = (Integer) params.get("playerId");
+        Player player = PlayerDAO.getPlayer(playerId);
+        if (player == null) {
+            Utils.respondJsonError(response, "Player with ID " + playerId + " not found", HttpServletResponse.SC_NOT_FOUND);
         } else {
-            Scoreboard scoreboard;
-            if (abstractGame instanceof MultiplayerGame) {
-                scoreboard = scoreboardCacheBean.getMultiplayerScoreboard((MultiplayerGame) abstractGame);
-            } else if (abstractGame instanceof MeleeGame) {
-                scoreboard = scoreboardCacheBean.getMeleeScoreboard((MeleeGame) abstractGame);
-            } else {
-                Utils.respondJsonError(response, "Specified game is neither battleground nor melee");
-                return;
-            }
-            List<MutantInfo> mutantInfos = gameService.getMutants(login.getUserId(), gameId).stream().map(MutantInfo::fromMutantDTO).collect(Collectors.toList());
-            List<TestInfo> testInfos = gameService.getTests(login.getUserId(), gameId).stream().map(TestInfo::fromTestDTO).collect(Collectors.toList());
+            Gson gson = new Gson();
             PrintWriter out = response.getWriter();
             response.setContentType("application/json");
-            out.print(new Gson().toJson(new GameInfo(abstractGame.getId(), abstractGame.getClassId(), abstractGame.getState(), mutantInfos, testInfos, scoreboard,
-                    abstractGame.isCapturePlayersIntention())));
+            JsonObject root = new JsonObject();
+            root.add("userId", gson.toJsonTree(player.getUser().getId(), Integer.class));
+            root.add("username", gson.toJsonTree(player.getUser().getUsername(), String.class));
+            out.print(new Gson().toJson(root));
             out.flush();
         }
     }

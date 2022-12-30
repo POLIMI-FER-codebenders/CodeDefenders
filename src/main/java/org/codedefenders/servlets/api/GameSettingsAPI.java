@@ -21,9 +21,7 @@ package org.codedefenders.servlets.api;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -35,19 +33,19 @@ import javax.servlet.http.HttpServletResponse;
 import org.codedefenders.auth.CodeDefendersAuth;
 import org.codedefenders.beans.game.ScoreboardCacheBean;
 import org.codedefenders.database.GameDAO;
-import org.codedefenders.dto.api.GameInfo;
-import org.codedefenders.dto.api.MutantInfo;
-import org.codedefenders.dto.api.Scoreboard;
-import org.codedefenders.dto.api.TestInfo;
 import org.codedefenders.game.AbstractGame;
 import org.codedefenders.game.Test;
 import org.codedefenders.game.multiplayer.MeleeGame;
 import org.codedefenders.game.multiplayer.MultiplayerGame;
 import org.codedefenders.service.game.GameService;
+import org.codedefenders.servlets.admin.api.GetUserTokenAPI;
 import org.codedefenders.servlets.util.api.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.MissingRequiredPropertiesException;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 /**
  * This {@link HttpServlet} offers an API for {@link Test tests}.
@@ -59,9 +57,10 @@ import com.google.gson.Gson;
  *
  * @author <a href="https://github.com/werli">Phil Werli</a>
  */
-@WebServlet("/api/game")
-public class GameAPI extends HttpServlet {
+@WebServlet("/api/game/settings")
+public class GameSettingsAPI extends HttpServlet {
 
+    private static final Logger logger = LoggerFactory.getLogger(GetUserTokenAPI.class);
     final Map<String, Class<?>> parameterTypes = new HashMap<String, Class<?>>() {
         {
             put("gameId", Integer.class);
@@ -87,21 +86,28 @@ public class GameAPI extends HttpServlet {
         if (abstractGame == null) {
             Utils.respondJsonError(response, "Game with ID " + gameId + " not found", HttpServletResponse.SC_NOT_FOUND);
         } else {
-            Scoreboard scoreboard;
+            Gson gson = new Gson();
+            String gameType;
+            int autoEquivalenceThreshold;
             if (abstractGame instanceof MultiplayerGame) {
-                scoreboard = scoreboardCacheBean.getMultiplayerScoreboard((MultiplayerGame) abstractGame);
+                gameType = "MULTIPLAYER";
+                autoEquivalenceThreshold = ((MultiplayerGame) abstractGame).getAutomaticMutantEquivalenceThreshold();
             } else if (abstractGame instanceof MeleeGame) {
-                scoreboard = scoreboardCacheBean.getMeleeScoreboard((MeleeGame) abstractGame);
+                gameType = "MELEE";
+                autoEquivalenceThreshold = ((MeleeGame) abstractGame).getAutomaticMutantEquivalenceThreshold();
             } else {
                 Utils.respondJsonError(response, "Specified game is neither battleground nor melee");
                 return;
             }
-            List<MutantInfo> mutantInfos = gameService.getMutants(login.getUserId(), gameId).stream().map(MutantInfo::fromMutantDTO).collect(Collectors.toList());
-            List<TestInfo> testInfos = gameService.getTests(login.getUserId(), gameId).stream().map(TestInfo::fromTestDTO).collect(Collectors.toList());
             PrintWriter out = response.getWriter();
             response.setContentType("application/json");
-            out.print(new Gson().toJson(new GameInfo(abstractGame.getId(), abstractGame.getClassId(), abstractGame.getState(), mutantInfos, testInfos, scoreboard,
-                    abstractGame.isCapturePlayersIntention())));
+            JsonObject root = new JsonObject();
+            root.add("gameType", gson.toJsonTree(gameType, String.class));
+            root.add("gameLevel", gson.toJsonTree(abstractGame.getLevel()));
+            root.add("mutantValidatorLevel", gson.toJsonTree(abstractGame.getMutantValidatorLevel()));
+            root.add("maxAssertionsPerTest", gson.toJsonTree(abstractGame.getMaxAssertionsPerTest(), Integer.class));
+            root.add("autoEquivalenceThreshold", gson.toJsonTree(autoEquivalenceThreshold, Integer.class));
+            out.print(gson.toJson(root));
             out.flush();
         }
     }

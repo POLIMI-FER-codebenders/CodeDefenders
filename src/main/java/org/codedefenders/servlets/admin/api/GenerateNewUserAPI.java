@@ -40,7 +40,7 @@ import org.codedefenders.persistence.database.SettingsRepository;
 import org.codedefenders.persistence.database.UserRepository;
 import org.codedefenders.service.UserService;
 import org.codedefenders.service.game.GameService;
-import org.codedefenders.servlets.util.APIUtils;
+import org.codedefenders.servlets.util.api.Utils;
 import org.codedefenders.validation.input.CodeDefendersValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,14 +83,14 @@ public class GenerateNewUserAPI extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final Map<String, Object> params;
         try {
-            params = APIUtils.getParametersOrRespondJsonError(request, response, parameterTypes);
+            params = Utils.getParametersOrRespondJsonError(request, response, parameterTypes);
         } catch (MissingRequiredPropertiesException e) {
             return;
         }
         String name = (String) params.get("name");
         CodeDefendersValidator validator = new CodeDefendersValidator();
         if (!(validator.validUsername(name))) {
-            APIUtils.respondJsonError(response,
+            Utils.respondJsonError(response,
                     "Could not create user. Invalid username. Use 3-20 alphanumerics starting with a lowercase letter (a-z), no space or special characters.");
             return;
         }
@@ -121,7 +121,7 @@ public class GenerateNewUserAPI extends HttpServlet {
             out.print(new Gson().toJson(root));
             out.flush();
         } catch (NoSuchElementException e) {
-            APIUtils.respondJsonError(response, "Could not create user", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+            Utils.respondJsonError(response, "Could not create user", HttpStatus.SC_INTERNAL_SERVER_ERROR);
         }
     }
 }
