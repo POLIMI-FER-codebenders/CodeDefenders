@@ -34,6 +34,7 @@ import org.codedefenders.game.GameClass;
 import org.codedefenders.servlets.util.ServletUtils;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
@@ -56,7 +57,7 @@ public class GameClassAPI extends HttpServlet {
                 .map(GameClassDAO::getClassForId);
 
         if (!classId.isPresent()) {
-            response.setStatus(HttpStatus.SC_BAD_REQUEST);
+            response.setStatus(HttpStatus.SC_NOT_FOUND);
             return;
         }
 
@@ -70,7 +71,7 @@ public class GameClassAPI extends HttpServlet {
     }
 
     private String generateJsonForClass(GameClass gameClass) {
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
         JsonObject root = new JsonObject();
         root.add("id", gson.toJsonTree(gameClass.getId(), Integer.class));

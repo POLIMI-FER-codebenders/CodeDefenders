@@ -83,6 +83,7 @@ public class CodeDefendersBearerHttpAuthenticationFilter extends BearerHttpAuthe
 
         // Log user activity including the timestamp
         userService.recordSession(userId, ipAddress);
+        userService.createTokenIfNotExist(userId);
         logger.info("Successful login for username '{}' from ip {}", token.getPrincipal(), ipAddress);
 
         // Call the super method, as this is the one doing the redirect after a successful login.

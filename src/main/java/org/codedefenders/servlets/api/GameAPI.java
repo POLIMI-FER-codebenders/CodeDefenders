@@ -44,10 +44,7 @@ import org.codedefenders.game.Test;
 import org.codedefenders.game.multiplayer.MeleeGame;
 import org.codedefenders.game.multiplayer.MultiplayerGame;
 import org.codedefenders.service.game.GameService;
-import org.codedefenders.servlets.admin.api.GetUserTokenAPI;
 import org.codedefenders.servlets.util.api.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.env.MissingRequiredPropertiesException;
 
 import com.google.gson.Gson;
@@ -65,7 +62,6 @@ import com.google.gson.Gson;
 @WebServlet("/api/game")
 public class GameAPI extends HttpServlet {
 
-    private static final Logger logger = LoggerFactory.getLogger(GetUserTokenAPI.class);
     final Map<String, Class<?>> parameterTypes = new HashMap<String, Class<?>>() {
         {
             put("gameId", Integer.class);
@@ -104,7 +100,8 @@ public class GameAPI extends HttpServlet {
             List<TestInfo> testInfos = gameService.getTests(login.getUserId(), gameId).stream().map(TestInfo::fromTestDTO).collect(Collectors.toList());
             PrintWriter out = response.getWriter();
             response.setContentType("application/json");
-            out.print(new Gson().toJson(new GameInfo(abstractGame.getId(), abstractGame.getClassId(), abstractGame.getState(), mutantInfos, testInfos, scoreboard)));
+            out.print(new Gson().toJson(new GameInfo(abstractGame.getId(), abstractGame.getClassId(), abstractGame.getState(), mutantInfos, testInfos, scoreboard,
+                    abstractGame.isCapturePlayersIntention())));
             out.flush();
         }
     }

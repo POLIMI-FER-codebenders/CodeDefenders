@@ -28,7 +28,7 @@ public class UserInfo {
         mutants.put("total", stats.getAliveMutants() + stats.getKilledMutants());
         Map<String, Integer> tests = new HashMap<>();
         tests.put("killing", stats.getKillingTests());
-        tests.put("nonKilling", stats.getNonKillingTests());
+        tests.put("nonkilling", stats.getNonKillingTests());
         tests.put("killCount", stats.getTestKillCount());
         tests.put("total", stats.getKillingTests() + stats.getNonKillingTests());
         Map<String, Double> points = new HashMap<>();

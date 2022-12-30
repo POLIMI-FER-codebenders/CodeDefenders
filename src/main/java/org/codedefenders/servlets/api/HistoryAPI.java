@@ -51,10 +51,9 @@ import org.codedefenders.game.Mutant;
 import org.codedefenders.game.Test;
 import org.codedefenders.game.multiplayer.MeleeGame;
 import org.codedefenders.game.multiplayer.MultiplayerGame;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
@@ -94,12 +93,13 @@ public class HistoryAPI extends HttpServlet {
             mutantCodes.putAll(abstractGame.getMutants().stream().collect(Collectors.toMap(Mutant::getId, Mutant::getPatchString)));
             List<TestInfo> testInfos = abstractGame.getTests().stream().map(t -> TestInfo.fromTest(t, abstractGame.getMutants())).collect(Collectors.toList());
             testCodes.putAll(abstractGame.getTests().stream().collect(Collectors.toMap(Test::getId, Test::getAsString)));
-            gameInfos.add(new GameInfo(abstractGame.getId(), abstractGame.getClassId(), abstractGame.getState(), mutantInfos, testInfos, scoreboard));
+            gameInfos.add(new GameInfo(abstractGame.getId(), abstractGame.getClassId(), abstractGame.getState(), mutantInfos, testInfos, scoreboard,
+                    abstractGame.isCapturePlayersIntention()));
         }
         List<ClassInfo> classInfos = classes.stream().map(c -> new ClassInfo(c.getId(), c.getName(), c.getAlias(), c.getSourceCode(), c.getTestingFramework(),
                 c.getAssertionLibrary())).collect(Collectors.toList());
         List<KillMapInfo> killMapInfos = killMaps.stream().map(c -> new KillMapInfo(c.mutant.getId(), c.test.getId(), c.status)).collect(Collectors.toList());
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         PrintWriter out = response.getWriter();
         response.setContentType("application/json");
         JsonObject root = new JsonObject();

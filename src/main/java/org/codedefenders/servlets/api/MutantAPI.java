@@ -69,6 +69,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
@@ -118,7 +119,7 @@ public class MutantAPI extends HttpServlet {
         final Optional<MutantDTO> mutant = ServletUtils.getIntParameter(request, "mutantId").map(id -> gameService.getMutant(login.getUserId(), id));
 
         if (!mutant.isPresent()) {
-            response.setStatus(HttpStatus.SC_BAD_REQUEST);
+            response.setStatus(HttpStatus.SC_NOT_FOUND);
             return;
         }
 
@@ -132,8 +133,7 @@ public class MutantAPI extends HttpServlet {
     }
 
     private String generateJsonForMutant(MutantDTO mutant) {
-        Gson gson = new Gson();
-
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         JsonObject root = new JsonObject();
         root.add("id", gson.toJsonTree(mutant.getId(), Integer.class));
         root.add("playerId", gson.toJsonTree(mutant.getPlayerId(), Integer.class));
