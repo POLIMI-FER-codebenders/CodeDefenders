@@ -1,0 +1,2458 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "CodeDefenders API",
+        "version": "1.0",
+        "x-logo": {
+            "url": ""
+        },
+        "contact": {}
+    },
+    "servers": [{
+            "url": "https://codedef1.duckdns.org/"
+        }, {
+            "url": "https://codedef2.duckdns.org/"
+        }
+    ],
+    "paths": {
+        "/api/class": {
+            "summary": "",
+            "get": {
+                "parameters": [{
+                        "deprecated": false,
+                        "name": "classId",
+                        "description": "The class ID",
+                        "in": "query",
+                        "required": true,
+                        "allowEmptyValue": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "operationId": "getClass",
+                "description": "Get a class by its ID",
+                "responses": {
+                    "200": {
+                        "description": "The requested Class object",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Class"
+                                }
+                            }
+                        },
+                        "headers": {},
+                        "links": {}
+                    },
+                    "404": {
+                        "description": "Class not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Get a class",
+                "tags": [
+                    "Game"
+                ]
+            }
+        },
+        "/api/admin/class/upload": {
+            "summary": "",
+            "post": {
+                "parameters": [],
+                "operationId": "uploadClass",
+                "description": "Upload a class providing name and source",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "The name of the class with .java extension (must be the same as the public class defined in the source)"
+                                    },
+                                    "source": {
+                                        "type": "string",
+                                        "description": "The code of the class"
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "source"
+                                ],
+                                "additionalProperties": false
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Upload successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "classId": {
+                                            "type": "integer",
+                                            "description": "The id of the created class"
+                                        }
+                                    },
+                                    "required": [
+                                        "classId"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        },
+                        "headers": {},
+                        "links": {}
+                    },
+                    "400": {
+                        "description": "Missing parameters or compilation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Upload a class",
+                "tags": [
+                    "Admin",
+                    "Game"
+                ]
+            }
+        },
+        "/api/history": {
+            "get": {
+                "summary": "Get games history",
+                "description": "Get the history of all played games",
+                "parameters": [],
+                "operationId": "getHistory",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/History"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "History"
+                ]
+            }
+        },
+        "/api/player": {
+            "get": {
+                "summary": "Get a player's info",
+                "description": "Returns a player's username and userId from its playerId",
+                "parameters": [{
+                        "name": "playerId",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "The user's playerId"
+                    }
+                ],
+                "operationId": "getPlayer",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "userId": {
+                                            "type": "integer",
+                                            "description": "The player's userId"
+                                        },
+                                        "username": {
+                                            "type": "string",
+                                            "description": "The player's username"
+                                        }
+                                    },
+                                    "required": [
+                                        "userId",
+                                        "username"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Player not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "User"
+                ]
+            }
+        },
+        "/api/user": {
+            "get": {
+                "summary": "Get a user's info",
+                "description": "Returns a user's informations from its ID",
+                "parameters": [{
+                        "name": "userId",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "The user's ID"
+                    }
+                ],
+                "operationId": "getUser",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "User"
+                ]
+            }
+        },
+        "/api/game": {
+            "summary": "",
+            "get": {
+                "parameters": [{
+                        "deprecated": false,
+                        "name": "gameId",
+                        "description": "The game ID",
+                        "in": "query",
+                        "required": true,
+                        "allowEmptyValue": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "operationId": "getStatus",
+                "description": "Get the status of the game with the specified ID",
+                "responses": {
+                    "200": {
+                        "description": "The requested GameStatus object",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GameStatus"
+                                }
+                            }
+                        },
+                        "headers": {},
+                        "links": {}
+                    },
+                    "404": {
+                        "description": "Game not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Get game status",
+                "tags": [
+                    "Game"
+                ]
+            }
+        },
+        "/api/game/role": {
+            "summary": "",
+            "get": {
+                "parameters": [{
+                        "deprecated": false,
+                        "name": "gameId",
+                        "description": "The game ID",
+                        "in": "query",
+                        "required": true,
+                        "allowEmptyValue": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "operationId": "getGameRole",
+                "description": "Get own role in the game with the specified ID",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "role": {
+                                            "type": "string",
+                                            "description": "The requested role",
+                                            "enum": [
+                                                "ATTACKER",
+                                                "DEFENDER",
+                                                "OBSERVER",
+                                                "PLAYER",
+                                                "NONE"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "role"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        },
+                        "headers": {},
+                        "links": {}
+                    },
+                    "404": {
+                        "description": "Game not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Get game role",
+                "tags": [
+                    "Game"
+                ]
+            }
+        },
+        "/admin/api/game": {
+            "post": {
+                "summary": "Create a new game",
+                "description": "Create a new game with the specified class, settings and teams",
+                "parameters": [],
+                "operationId": "newGame",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "gameId": {
+                                            "description": "The ID of the created game",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "required": [
+                                        "gameId"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Could not create game",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User or class not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "classId": {
+                                        "type": "integer",
+                                        "description": "The ID of the class to use for the game"
+                                    },
+                                    "teams": {
+                                        "type": "array",
+                                        "description": "The teams participating to the game",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "userIds": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "integer"
+                                                    },
+                                                    "description": "List of users in the team"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "description": "Role of the team",
+                                                    "enum": [
+                                                        "ATTACKER",
+                                                        "DEFENDER",
+                                                        "PLAYER"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "userIds",
+                                                "role"
+                                            ],
+                                            "additionalProperties": false
+                                        }
+                                    },
+                                    "settings": {
+                                        "$ref": "#/components/schemas/GameSettings"
+                                    }
+                                },
+                                "required": [
+                                    "classId",
+                                    "teams",
+                                    "settings"
+                                ],
+                                "additionalProperties": false
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Admin",
+                    "Game"
+                ]
+            }
+        },
+        "/admin/api/game/start": {
+            "post": {
+                "summary": "Start a game",
+                "description": "Start a game",
+                "parameters": [],
+                "operationId": "startGame",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Cannot start game",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Game not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "gameId": {
+                                        "type": "integer",
+                                        "description": "The ID of the game to start"
+                                    }
+                                },
+                                "required": [
+                                    "gameId"
+                                ],
+                                "additionalProperties": false
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Admin",
+                    "Game"
+                ]
+            }
+        },
+        "/admin/api/game/disable-uploads": {
+            "post": {
+                "summary": "Disable uploads in a game",
+                "description": "Disable class and mutant uploads in a game (advance it to the grace one phase)",
+                "parameters": [],
+                "operationId": "graceOneGame",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Cannot advance game",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Game not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "gameId": {
+                                        "type": "integer",
+                                        "description": "The ID of the target game"
+                                    }
+                                },
+                                "required": [
+                                    "gameId"
+                                ],
+                                "additionalProperties": false
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Admin",
+                    "Game"
+                ]
+            }
+        },
+        "/admin/api/game/disable-claims": {
+            "post": {
+                "summary": "Disable mutant claims in a game",
+                "description": "Disable mutant claims in a game (advance it to the grace two phase)",
+                "parameters": [],
+                "operationId": "graceTwoGame",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Cannot advance game",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Game not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "gameId": {
+                                        "type": "integer",
+                                        "description": "The ID of the target game"
+                                    }
+                                },
+                                "required": [
+                                    "gameId"
+                                ],
+                                "additionalProperties": false
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Admin",
+                    "Game"
+                ]
+            }
+        },
+        "/admin/api/game/end": {
+            "post": {
+                "summary": "End a game",
+                "description": "End a game",
+                "parameters": [],
+                "operationId": "endGame",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Cannot end game",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Game not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "gameId": {
+                                        "type": "integer",
+                                        "description": "The ID of the game to end"
+                                    }
+                                },
+                                "required": [
+                                    "gameId"
+                                ],
+                                "additionalProperties": false
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Admin",
+                    "Game"
+                ]
+            }
+        },
+        "/api/game/settings": {
+            "summary": "",
+            "get": {
+                "parameters": [{
+                        "deprecated": false,
+                        "name": "gameId",
+                        "description": "The game ID",
+                        "in": "query",
+                        "required": true,
+                        "allowEmptyValue": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "operationId": "getSettings",
+                "description": "Get the settings of the game with the specified ID",
+                "responses": {
+                    "200": {
+                        "description": "The requested GameSettings object",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GameSettings"
+                                }
+                            }
+                        },
+                        "headers": {},
+                        "links": {}
+                    },
+                    "404": {
+                        "description": "Game not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Get game settings",
+                "tags": [
+                    "Game"
+                ]
+            }
+        },
+        "/api/game/test": {
+            "summary": "",
+            "get": {
+                "parameters": [{
+                        "deprecated": false,
+                        "name": "testId",
+                        "description": "The test ID",
+                        "in": "query",
+                        "required": true,
+                        "allowEmptyValue": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "operationId": "getTest",
+                "description": "Get a test by its ID",
+                "responses": {
+                    "200": {
+                        "description": "The requested Test object",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Test"
+                                }
+                            }
+                        },
+                        "headers": {},
+                        "links": {}
+                    },
+                    "404": {
+                        "description": "Test not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Get a test",
+                "tags": [
+                    "Game"
+                ]
+            },
+            "post": {
+                "summary": "Upload a test",
+                "description": "Upload a test providing its code and target game",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "gameId": {
+                                        "type": "integer",
+                                        "description": "The target game ID"
+                                    },
+                                    "source": {
+                                        "type": "string",
+                                        "description": "The test's code"
+                                    },
+                                    "selectedLine": {
+                                        "type": "integer",
+                                        "description": "The line the test will defend\nRequired only if capturing intentions is enabled for the game"
+                                    }
+                                },
+                                "required": [
+                                    "gameId",
+                                    "source"
+                                ],
+                                "additionalProperties": false
+                            }
+                        }
+                    }
+                },
+                "operationId": "uploadTest",
+                "responses": {
+                    "200": {
+                        "description": "Test upload and compilation successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "description": "ID of the uploaded test"
+                                        },
+                                        "testSmells": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "id"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [],
+                "tags": [
+                    "Game"
+                ]
+            }
+        },
+        "/api/game/test/template": {
+            "summary": "",
+            "get": {
+                "parameters": [{
+                        "deprecated": false,
+                        "name": "gameId",
+                        "description": "The game ID",
+                        "in": "query",
+                        "required": true,
+                        "allowEmptyValue": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "operationId": "getTestTemplate",
+                "description": "Get the test template for the game with the specified ID",
+                "responses": {
+                    "200": {
+                        "description": "The requested testing template",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "template": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "template"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        },
+                        "headers": {},
+                        "links": {}
+                    },
+                    "404": {
+                        "description": "Game not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Get the test template",
+                "tags": [
+                    "Game"
+                ]
+            }
+        },
+        "/api/game/mutant": {
+            "summary": "",
+            "get": {
+                "parameters": [{
+                        "deprecated": false,
+                        "name": "mutantId",
+                        "description": "The mutant ID",
+                        "in": "query",
+                        "required": true,
+                        "allowEmptyValue": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "operationId": "getMutant",
+                "description": "Get a mutant by its ID",
+                "responses": {
+                    "200": {
+                        "description": "The requested Mutant object",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Mutant"
+                                }
+                            }
+                        },
+                        "headers": {},
+                        "links": {}
+                    },
+                    "404": {
+                        "description": "Mutant not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Get a mutant",
+                "tags": [
+                    "Game"
+                ]
+            },
+            "post": {
+                "summary": "Upload a mutant",
+                "description": "Upload a mutant providing its code and target game",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "gameId": {
+                                        "type": "integer",
+                                        "description": "The target game ID"
+                                    },
+                                    "source": {
+                                        "type": "string",
+                                        "description": "The mutant's code"
+                                    },
+                                    "attackerIntention": {
+                                        "type": "string",
+                                        "description": "The type of the mutant\nRequired only if capturing intentions is enabled for the game",
+                                        "enum": [
+                                            "EQUIVALENT",
+                                            "KILLABLE",
+                                            "DONTKNOW"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "gameId",
+                                    "source"
+                                ],
+                                "additionalProperties": false
+                            }
+                        }
+                    }
+                },
+                "operationId": "uploadMutant",
+                "responses": {
+                    "200": {
+                        "description": "Mutant upload and compilation successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "description": "ID of the uploaded mutant"
+                                        }
+                                    },
+                                    "required": [
+                                        "id"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [],
+                "tags": [
+                    "Game"
+                ]
+            }
+        },
+        "/api/game/mutant/equivalences": {
+            "summary": "",
+            "get": {
+                "parameters": [{
+                        "deprecated": false,
+                        "name": "gameId",
+                        "description": "The game ID",
+                        "in": "query",
+                        "required": true,
+                        "allowEmptyValue": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "operationId": "getPendingEquivalences",
+                "description": "Get unresolved equivalence claims for the game with the specified ID",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "mutantIds": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "integer"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "mutantIds"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        },
+                        "headers": {},
+                        "links": {}
+                    },
+                    "404": {
+                        "description": "Game not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Get unresolved equivalence claims",
+                "tags": [
+                    "Game"
+                ]
+            }
+        },
+        "/api/game/mutant/equivalences/claim": {
+            "summary": "",
+            "post": {
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "gameId": {
+                                        "type": "integer",
+                                        "description": "The target game ID"
+                                    },
+                                    "lines": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "description": "A line modified by the supposedly equivalent mutant"
+                                    }
+                                },
+                                "required": [
+                                    "gameId",
+                                    "lines"
+                                ],
+                                "additionalProperties": false
+                            }
+                        }
+                    }
+                },
+                "operationId": "claimEquivalent",
+                "description": "Claim all mutants on the specified line as equivalent, meaning that they doesn't affect the behavior of the code.",
+                "responses": {
+                    "200": {
+                        "description": "Claim successful"
+                    },
+                    "403": {
+                        "description": "Cannot claim this mutant",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Mutant not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Claim a mutant as equivalent",
+                "parameters": [],
+                "tags": [
+                    "Game"
+                ]
+            }
+        },
+        "/api/game/mutant/equivalences/resolve": {
+            "summary": "",
+            "post": {
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "mutantId": {
+                                        "type": "integer",
+                                        "description": "The mutant ID"
+                                    },
+                                    "accept": {
+                                        "type": "boolean",
+                                        "description": "`true` to accept the mutant as equivalent, `false` to dispute the claim"
+                                    },
+                                    "source": {
+                                        "type": "string",
+                                        "description": "The source code of a killing test for the mutant, required if `accept` is set to `false`"
+                                    }
+                                },
+                                "required": [
+                                    "mutantId",
+                                    "accept"
+                                ],
+                                "additionalProperties": false
+                            }
+                        }
+                    }
+                },
+                "operationId": "resolveEquivalence",
+                "description": "Resolve the pending equivalence claim for a mutant, either by accepting it as equal or uploading the code for a killing test",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [{
+                                            "type": "object",
+                                            "properties": {
+                                                "killedClaimed": {
+                                                    "type": "boolean",
+                                                    "description": "Whether the claimed mutant was killed with the uploaded test"
+                                                },
+                                                "killedOthers": {
+                                                    "type": "integer",
+                                                    "description": "Count of other claimed mutants killed with the uploaded test"
+                                                }
+                                            },
+                                            "required": [
+                                                "killedClaimed",
+                                                "killedOthers"
+                                            ]
+                                        }, {
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing parameters or compilation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Resolve pending equivalence",
+                "parameters": [],
+                "tags": [
+                    "Game"
+                ]
+            }
+        },
+        "/admin/api/auth/newUser": {
+            "get": {
+                "summary": "Generate a new user",
+                "description": "Generate a new user with a name in the format `{creatorUsername}_{username}_{randomNumbers}`",
+                "parameters": [{
+                        "name": "name",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "The name part of the generated username"
+                    }
+                ],
+                "operationId": "generateNewUser",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "userId": {
+                                            "type": "integer",
+                                            "description": "The ID of the generated user"
+                                        },
+                                        "username": {
+                                            "type": "string",
+                                            "description": "The username of the generated user"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "description": "The login token of the generated user"
+                                        }
+                                    },
+                                    "required": [
+                                        "userId",
+                                        "username",
+                                        "token"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Admin",
+                    "User"
+                ]
+            }
+        },
+        "/admin/api/auth/token": {
+            "get": {
+                "summary": "Get an authentication token for the Bot API",
+                "description": "Get an authentication token for the Bot API, tied to a specific user",
+                "parameters": [{
+                        "name": "userId",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "The user for which to get the token. Must have been created by TA"
+                    }
+                ],
+                "operationId": "getUserToken",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "description": "The requested API token"
+                                        }
+                                    },
+                                    "required": [
+                                        "token"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorMessage"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Admin",
+                    "User"
+                ]
+            }
+        },
+        "/api/auth/self": {
+            "get": {
+                "summary": "Get own information",
+                "description": "Get own information (userId, username, API token)",
+                "parameters": [],
+                "operationId": "getSelf",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "userId": {
+                                            "type": "integer",
+                                            "description": "Own user ID"
+                                        },
+                                        "username": {
+                                            "type": "string",
+                                            "description": "Own username"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "description": "Own API token"
+                                        }
+                                    },
+                                    "required": [
+                                        "token"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "User"
+                ]
+            }
+        },
+        "/admin/api/auth/self": {
+            "get": {
+                "summary": "Get own information",
+                "description": "Get own information (userId, username, API token). This API has the same functionality as getSelf, but it can be called only by admins, so it can be used as a permission check.",
+                "parameters": [],
+                "operationId": "getSelfAdmin",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "userId": {
+                                            "type": "integer",
+                                            "description": "Own user ID"
+                                        },
+                                        "username": {
+                                            "type": "string",
+                                            "description": "Own username"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "description": "Own API token"
+                                        }
+                                    },
+                                    "required": [
+                                        "token"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Admin",
+                    "User"
+                ]
+            }
+        },
+        "/admin/api/events": {
+            "get": {
+                "summary": "Get events and scores from all created games",
+                "description": "Get events and scores from all games created by the logged user, starting from the specified time\nOnly scores for games that also have events are returned",
+                "parameters": [{
+                        "name": "fromTimestamp",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "The minimum timestamp of the events"
+                    }
+                ],
+                "operationId": "getAllEvents",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EventList"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Admin",
+                    "Game"
+                ]
+            }
+        },
+        "/admin/api/load": {
+            "get": {
+                "summary": "Get server load",
+                "description": "Get server load (count of active battleground and melee games)",
+                "parameters": [],
+                "operationId": "getServerLoad",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "battleground": {
+                                            "type": "integer",
+                                            "description": "Count of active battleground games"
+                                        },
+                                        "melee": {
+                                            "type": "integer",
+                                            "description": "Count of active melee games"
+                                        },
+                                        "total": {
+                                            "type": "integer",
+                                            "description": "Total count of active games"
+                                        }
+                                    },
+                                    "required": [
+                                        "battleground",
+                                        "melee",
+                                        "total"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Admin",
+                    "Game"
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "BearerToken": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        },
+        "schemas": {
+            "Class": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "description": "Class ID"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Class name"
+                    },
+                    "alias": {
+                        "type": "string",
+                        "description": "Class alias"
+                    },
+                    "source": {
+                        "type": "string",
+                        "description": "Class code"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "alias",
+                    "source"
+                ],
+                "additionalProperties": false
+            },
+            "ClassInfo": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "description": "Class ID"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Class name"
+                    },
+                    "alias": {
+                        "type": "string",
+                        "description": "Class alias"
+                    },
+                    "source": {
+                        "type": "string",
+                        "description": "Class code"
+                    },
+                    "testingFramework": {
+                        "type": "string",
+                        "description": "Frameworks of the tests that will be run on the class",
+                        "enum": [
+                            "JUNIT4"
+                        ]
+                    },
+                    "assertionLibrary": {
+                        "type": "string",
+                        "description": "Assertion library of the tests that will be run on the class",
+                        "enum": [
+                            "JUNIT4",
+                            "JUNIT5",
+                            "HAMCREST",
+                            "GOOGLE_TRUTH",
+                            "JUNIT4_HAMCREST",
+                            "JUNIT5_HAMCREST",
+                            "JUNIT4_GOOGLE_TRUTH",
+                            "JUNIT5_GOOGLE_TRUTH"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "alias",
+                    "source",
+                    "testingFramework",
+                    "assertionLibrary"
+                ],
+                "additionalProperties": false
+            },
+            "Mutant": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "description": "Mutant ID"
+                    },
+                    "playerId": {
+                        "type": "integer",
+                        "description": "Creator's playerId"
+                    },
+                    "gameId": {
+                        "type": "integer",
+                        "description": "ID of the game the mutant is used in"
+                    },
+                    "diff": {
+                        "type": "string",
+                        "description": "Mutant diff to original class"
+                    }
+                },
+                "required": [
+                    "id",
+                    "playerId",
+                    "gameId"
+                ],
+                "additionalProperties": false
+            },
+            "Test": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "description": "Test ID"
+                    },
+                    "playerId": {
+                        "type": "integer",
+                        "description": "Creator's playerId"
+                    },
+                    "gameId": {
+                        "type": "integer",
+                        "description": "ID of the game the test is used in"
+                    },
+                    "source": {
+                        "type": "string",
+                        "description": "Test code"
+                    }
+                },
+                "required": [
+                    "id",
+                    "playerId",
+                    "gameId"
+                ],
+                "additionalProperties": false
+            },
+            "MutantInfo": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "description": "Mutant ID"
+                    },
+                    "playerId": {
+                        "type": "integer",
+                        "description": "Creator player ID"
+                    },
+                    "state": {
+                        "type": "string",
+                        "description": "Mutant state",
+                        "enum": [
+                            "ALIVE",
+                            "KILLED",
+                            "FLAGGED",
+                            "EQUIVALENT"
+                        ]
+                    },
+                    "mutatedLines": {
+                        "type": "array",
+                        "description": "Mutated lines",
+                        "items": {
+                            "type": "integer"
+                        }
+                    },
+                    "points": {
+                        "type": "integer",
+                        "description": "Current points scored"
+                    },
+                    "killingTestId": {
+                        "type": "integer",
+                        "description": "ID of the test that killed this mutant, or -1 if none"
+                    },
+                    "canMarkEquivalent": {
+                        "type": "boolean",
+                        "description": "Whether this mutant can be claimed as equivalent or not"
+                    }
+                },
+                "required": [
+                    "id",
+                    "playerId",
+                    "state",
+                    "mutatedLines",
+                    "points"
+                ],
+                "additionalProperties": false
+            },
+            "User": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "description": "Name of the user"
+                    },
+                    "mutants": {
+                        "type": "object",
+                        "properties": {
+                            "total": {
+                                "type": "integer",
+                                "description": "Number of created mutants"
+                            },
+                            "alive": {
+                                "type": "integer",
+                                "description": "Number of created mutants which are still alive"
+                            },
+                            "dead": {
+                                "type": "integer",
+                                "description": "Number of created mutants which have been killed by a test"
+                            },
+                            "equivalent": {
+                                "type": "integer",
+                                "description": "Number of created mutants which have been accepted as equivalent"
+                            }
+                        },
+                        "required": [
+                            "total",
+                            "alive",
+                            "dead",
+                            "equivalent"
+                        ],
+                        "additionalProperties": false
+                    },
+                    "tests": {
+                        "type": "object",
+                        "properties": {
+                            "total": {
+                                "type": "integer",
+                                "description": "Number of created tests"
+                            },
+                            "killCount": {
+                                "type": "integer",
+                                "description": "Number of mutants killed by all tests"
+                            },
+                            "killing": {
+                                "type": "integer",
+                                "description": "Number of created tests which killed at least a mutant"
+                            },
+                            "nonkilling": {
+                                "type": "integer",
+                                "description": "Number of created tests which didn't kill any mutant"
+                            }
+                        },
+                        "required": [
+                            "total",
+                            "killing",
+                            "killCount",
+                            "nonkilling"
+                        ],
+                        "additionalProperties": false
+                    },
+                    "points": {
+                        "type": "object",
+                        "properties": {
+                            "total": {
+                                "type": "integer",
+                                "description": "Total points"
+                            },
+                            "fromMutants": {
+                                "type": "integer",
+                                "description": "Points from created mutants"
+                            },
+                            "fromTests": {
+                                "type": "integer",
+                                "description": "Points from created tests"
+                            },
+                            "avgPerTest": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Average points per created test"
+                            },
+                            "avgPerMutant": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Average points per created mutant"
+                            }
+                        },
+                        "required": [
+                            "total",
+                            "fromMutants",
+                            "fromTests",
+                            "avgPerTest",
+                            "avgPerMutant"
+                        ],
+                        "additionalProperties": false
+                    },
+                    "games": {
+                        "type": "object",
+                        "properties": {
+                            "total": {
+                                "type": "integer",
+                                "description": "Total number of games played"
+                            },
+                            "asAttacker": {
+                                "type": "integer",
+                                "description": "Number of games played as attacker"
+                            },
+                            "asDefender": {
+                                "type": "integer",
+                                "description": "Number of games played as defender"
+                            }
+                        },
+                        "required": [
+                            "total",
+                            "asAttacker",
+                            "asDefender"
+                        ],
+                        "additionalProperties": false
+                    }
+                },
+                "required": [
+                    "username",
+                    "mutants",
+                    "tests",
+                    "points",
+                    "games"
+                ],
+                "additionalProperties": false
+            },
+            "TestInfo": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "description": "Test ID"
+                    },
+                    "playerId": {
+                        "type": "integer",
+                        "description": "Creator player ID"
+                    },
+                    "coveredLines": {
+                        "type": "array",
+                        "description": "Lines covered by the test",
+                        "items": {
+                            "type": "integer"
+                        }
+                    },
+                    "points": {
+                        "type": "integer",
+                        "description": "Points scored by the tests"
+                    },
+                    "coveredMutantIds": {
+                        "type": "array",
+                        "description": "Mutants covered by the tests",
+                        "items": {
+                            "type": "integer"
+                        }
+                    },
+                    "killedMutantIds": {
+                        "type": "array",
+                        "description": "Mutants killed by the test",
+                        "items": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "playerId",
+                    "coveredLines",
+                    "points",
+                    "killedMutantIds"
+                ],
+                "additionalProperties": false
+            },
+            "MultiplayerScoreboard": {
+                "type": "object",
+                "properties": {
+                    "attackers": {
+                        "type": "array",
+                        "description": "List of attacker scores",
+                        "items": {
+                            "$ref": "#/components/schemas/Attacker"
+                        }
+                    },
+                    "attackersTotal": {
+                        "$ref": "#/components/schemas/Attacker"
+                    },
+                    "defenders": {
+                        "type": "array",
+                        "description": "List of defender scores",
+                        "items": {
+                            "$ref": "#/components/schemas/Defender"
+                        }
+                    },
+                    "defendersTotal": {
+                        "$ref": "#/components/schemas/Defender"
+                    }
+                },
+                "required": [
+                    "attackers",
+                    "attackersTotal",
+                    "defenders",
+                    "defendersTotal"
+                ],
+                "additionalProperties": false
+            },
+            "MeleeScoreboard": {
+                "type": "object",
+                "properties": {
+                    "players": {
+                        "type": "array",
+                        "description": "List of player scores",
+                        "items": {
+                            "$ref": "#/components/schemas/Player"
+                        }
+                    }
+                },
+                "required": [
+                    "players"
+                ],
+                "additionalProperties": false
+            },
+            "Attacker": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "description": "User's name"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "description": "User's ID"
+                    },
+                    "playerId": {
+                        "type": "integer",
+                        "description": "User's player ID, game specific"
+                    },
+                    "mutants": {
+                        "type": "object",
+                        "properties": {
+                            "alive": {
+                                "type": "integer",
+                                "description": "Number of alive mutants"
+                            },
+                            "killed": {
+                                "type": "integer",
+                                "description": "Number of dead mutants"
+                            },
+                            "equivalent": {
+                                "type": "integer",
+                                "description": "Number of mutants accepted as equivalent"
+                            },
+                            "total": {
+                                "type": "integer",
+                                "description": "Total number of mutants"
+                            }
+                        },
+                        "required": [
+                            "alive",
+                            "killed",
+                            "equivalent",
+                            "total"
+                        ],
+                        "additionalProperties": false
+                    },
+                    "duels": {
+                        "type": "object",
+                        "properties": {
+                            "won": {
+                                "type": "integer",
+                                "description": "Number of duels won"
+                            },
+                            "lost": {
+                                "type": "integer",
+                                "description": "Number of duels lost"
+                            },
+                            "ongoing": {
+                                "type": "integer",
+                                "description": "Number of ongoing duels"
+                            }
+                        },
+                        "required": [
+                            "won",
+                            "lost",
+                            "ongoing"
+                        ],
+                        "additionalProperties": false
+                    },
+                    "points": {
+                        "type": "integer",
+                        "description": "Points scored"
+                    }
+                },
+                "required": [
+                    "username",
+                    "userId",
+                    "playerId",
+                    "mutants",
+                    "duels",
+                    "points"
+                ],
+                "additionalProperties": false,
+                "description": "Information for a user who has the attacker role in the selected game"
+            },
+            "Defender": {
+                "type": "object",
+                "description": "Information for a user who has the defender role in the selected game",
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "description": "User's name"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "description": "User's ID"
+                    },
+                    "playerId": {
+                        "type": "integer",
+                        "description": "User's player ID, game specific"
+                    },
+                    "tests": {
+                        "type": "object",
+                        "properties": {
+                            "killing": {
+                                "type": "integer",
+                                "description": "Number of tests that killed at least one mutant"
+                            },
+                            "nonkilling": {
+                                "type": "integer",
+                                "description": "Number of tests that didn't kill any mutants"
+                            },
+                            "total": {
+                                "type": "integer",
+                                "description": "Total number of created tests"
+                            }
+                        },
+                        "required": [
+                            "killing",
+                            "nonkilling",
+                            "total"
+                        ],
+                        "additionalProperties": false
+                    },
+                    "duels": {
+                        "type": "object",
+                        "properties": {
+                            "won": {
+                                "type": "integer",
+                                "description": "Number of duels won"
+                            },
+                            "lost": {
+                                "type": "integer",
+                                "description": "Number of duels lost"
+                            },
+                            "ongoing": {
+                                "type": "integer",
+                                "description": "Number of ongoing duels"
+                            }
+                        },
+                        "required": [
+                            "won",
+                            "lost",
+                            "ongoing"
+                        ],
+                        "additionalProperties": false
+                    },
+                    "points": {
+                        "type": "integer",
+                        "description": "Points scored"
+                    }
+                },
+                "required": [
+                    "username",
+                    "userId",
+                    "playerId",
+                    "tests",
+                    "duels",
+                    "points"
+                ],
+                "additionalProperties": false
+            },
+            "Player": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "description": "User's name"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "description": "User's ID"
+                    },
+                    "playerId": {
+                        "type": "integer",
+                        "description": "User's player ID, game specific"
+                    },
+                    "points": {
+                        "type": "integer",
+                        "description": "Points scored"
+                    },
+                    "attackPoints": {
+                        "type": "integer",
+                        "description": "Points scored by creating mutants"
+                    },
+                    "defensePoints": {
+                        "type": "integer",
+                        "description": "Points scored by creating tests"
+                    },
+                    "duelPoints": {
+                        "type": "integer",
+                        "description": "Points scored by winning duels"
+                    }
+                },
+                "required": [
+                    "username",
+                    "userId",
+                    "playerId",
+                    "points",
+                    "attackPoints",
+                    "defensePoints",
+                    "duelPoints"
+                ],
+                "additionalProperties": false
+            },
+            "GameSettings": {
+                "type": "object",
+                "properties": {
+                    "gameType": {
+                        "type": "string",
+                        "description": "Type of the game",
+                        "enum": [
+                            "MULTIPLAYER",
+                            "MELEE"
+                        ]
+                    },
+                    "gameLevel": {
+                        "type": "string",
+                        "description": "Level of the game",
+                        "enum": [
+                            "EASY",
+                            "HARD"
+                        ]
+                    },
+                    "mutantValidatorLevel": {
+                        "type": "string",
+                        "description": "Strictness of mutant validation",
+                        "enum": [
+                            "RELAXED",
+                            "MODERATE",
+                            "STRICT"
+                        ]
+                    },
+                    "maxAssertionsPerTest": {
+                        "type": "integer",
+                        "description": "Maximum number of assertions in a test"
+                    },
+                    "autoEquivalenceThreshold": {
+                        "type": "integer",
+                        "description": "Maximum number of tests that can cover and not kill the mutant, after which it's automatically claimed as equivalent. 0 to disable"
+                    }
+                },
+                "required": [
+                    "gameType",
+                    "gameLevel",
+                    "mutantValidatorLevel",
+                    "maxAssertionsPerTest",
+                    "autoEquivalenceThreshold"
+                ],
+                "additionalProperties": false
+            },
+            "GameStatus": {
+                "type": "object",
+                "properties": {
+                    "gameId": {
+                        "type": "integer",
+                        "description": "Game ID"
+                    },
+                    "classId": {
+                        "type": "integer",
+                        "description": "ID of the class used in the game"
+                    },
+                    "state": {
+                        "type": "string",
+                        "description": "State of the game",
+                        "enum": [
+                            "CREATED",
+                            "ACTIVE",
+                            "GRACE_ONE",
+                            "GRACE_TWO",
+                            "FINISHED"
+                        ]
+                    },
+                    "capturePlayersIntention": {
+                        "type": "boolean",
+                        "description": "Whether the players are required to announce their intention when uploading mutants and tests"
+                    },
+                    "mutants": {
+                        "type": "array",
+                        "description": "List of uploaded mutants",
+                        "items": {
+                            "$ref": "#/components/schemas/MutantInfo"
+                        }
+                    },
+                    "tests": {
+                        "type": "array",
+                        "description": "List of uploaded tests",
+                        "items": {
+                            "$ref": "#/components/schemas/TestInfo"
+                        }
+                    },
+                    "scoreboard": {
+                        "description": "Player scores",
+                        "oneOf": [{
+                                "$ref": "#/components/schemas/MultiplayerScoreboard"
+                            }, {
+                                "$ref": "#/components/schemas/MeleeScoreboard"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "classId",
+                    "state",
+                    "mutants",
+                    "tests",
+                    "scoreboard"
+                ],
+                "additionalProperties": false
+            },
+            "Event": {
+                "type": "object",
+                "properties": {
+                    "userId": {
+                        "type": "integer",
+                        "description": "ID of the user generating the event"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "Message of the event (always empty)"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "Event type",
+                        "enum": [
+                            "GAME_CREATED",
+                            "GAME_STARTED",
+                            "GAME_FINISHED",
+                            "GAME_GRACE_ONE",
+                            "GAME_GRACE_TWO",
+                            "GAME_PLAYER_LEFT",
+                            "ATTACKER_MUTANT_CREATED",
+                            "ATTACKER_MUTANT_SURVIVED",
+                            "ATTACKER_MUTANT_ERROR",
+                            "ATTACKER_MUTANT_KILLED_EQUIVALENT",
+                            "ATTACKER_MESSAGE",
+                            "DEFENDER_MUTANT_EQUIVALENT",
+                            "DEFENDER_TEST_CREATED",
+                            "DEFENDER_TEST_READY",
+                            "DEFENDER_TEST_ERROR",
+                            "DEFENDER_MUTANT_CLAIMED_EQUIVALENT",
+                            "DEFENDER_KILLED_MUTANT",
+                            "DEFENDER_MESSAGE",
+                            "PLAYER_MUTANT_CREATED",
+                            "PLAYER_MUTANT_ERROR",
+                            "PLAYER_WON_EQUIVALENT_DUEL",
+                            "PLAYER_LOST_EQUIVALENT_DUEL",
+                            "PLAYER_MUTANT_SURVIVED",
+                            "PLAYER_KILLED_MUTANT",
+                            "PLAYER_MUTANT_CLAIMED_EQUIVALENT",
+                            "PLAYER_TEST_CREATED",
+                            "PLAYER_TEST_ERROR",
+                            "PLAYER_TEST_READY",
+                            "PLAYER_MUTANT_EQUIVALENT",
+                            "PLAYER_MUTANT_KILLED_EQUIVALENT",
+                            "PLAYER_MESSAGE",
+                            "ATTACKER_JOINED",
+                            "DEFENDER_JOINED",
+                            "PLAYER_JOINED",
+                            "GAME_MESSAGE",
+                            "GAME_MESSAGE_ATTACKER",
+                            "GAME_MESSAGE_DEFENDER",
+                            "GAME_MESSAGE_PLAYER"
+                        ]
+                    },
+                    "timestamp": {
+                        "type": "integer",
+                        "description": "Event timestamp (UNIX, seconds)"
+                    },
+                    "scoreboard": {
+                        "oneOf": [{
+                                "$ref": "#/components/schemas/MultiplayerScoreboard"
+                            }, {
+                                "$ref": "#/components/schemas/MeleeScoreboard"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "userId",
+                    "message",
+                    "type",
+                    "timestamp",
+                    "scoreboard"
+                ],
+                "additionalProperties": false
+            },
+            "EventList": {
+                "type": "object",
+                "properties": {
+                    "events": {
+                        "type": "object",
+                        "description": "List of events",
+                        "additionalProperties": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/components/schemas/Event"
+                            }
+                        }
+                    },
+                    "hasMore": {
+                        "type": "boolean",
+                        "description": "`true` if there are more events after the last one returned"
+                    }
+                },
+                "required": [
+                    "events",
+                    "hasMore"
+                ],
+                "additionalProperties": false
+            },
+            "ErrorMessage": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "string",
+                        "description": "Error message"
+                    }
+                },
+                "required": [
+                    "error"
+                ],
+                "additionalProperties": false
+            },
+            "History": {
+                "type": "object",
+                "properties": {
+                    "games": {
+                        "type": "array",
+                        "description": "List of games",
+                        "items": {
+                            "$ref": "#/components/schemas/GameStatus"
+                        }
+                    },
+                    "mutantSources": {
+                        "type": "object",
+                        "description": "List of mutant sources (key is the mutant's ID)",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    },
+                    "testSources": {
+                        "type": "object",
+                        "description": "List of test sources (key is the test's ID)",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    },
+                    "classes": {
+                        "type": "array",
+                        "description": "List of classes",
+                        "items": {
+                            "$ref": "#/components/schemas/ClassInfo"
+                        }
+                    },
+                    "killMaps": {
+                        "type": "array",
+                        "description": "List of killmaps",
+                        "items": {
+                            "$ref": "#/components/schemas/KillMapInfo"
+                        }
+                    }
+                },
+                "required": [
+                    "games",
+                    "mutantSources",
+                    "testSources",
+                    "classes",
+                    "killMaps"
+                ],
+                "additionalProperties": false
+            },
+            "KillMapInfo": {
+                "type": "object",
+                "properties": {
+                    "mutantId": {
+                        "type": "integer",
+                        "description": "ID of the tested mutant"
+                    },
+                    "testId": {
+                        "type": "integer",
+                        "description": "ID of the test ran"
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "Result of the execution",
+                        "enum": [
+                            "KILL",
+                            "NO_KILL",
+                            "NO_COVERAGE",
+                            "ERROR",
+                            "UNKNOWN"
+                        ]
+                    }
+                },
+                "required": [
+                    "mutantId",
+                    "testId",
+                    "status"
+                ],
+                "additionalProperties": false
+            }
+        },
+        "headers": {},
+        "responses": {},
+        "parameters": {},
+        "links": {},
+        "callbacks": {}
+    },
+    "tags": [{
+            "name": "User",
+            "description": "User related operations"
+        }, {
+            "name": "Admin",
+            "description": "Operations executable only by admins"
+        }, {
+            "name": "Game",
+            "description": "Game related operations"
+        }, {
+            "name": "History",
+            "description": "History related operations"
+        }
+    ],
+    "security": [{
+            "BearerToken": []
+        }
+    ]
+}
