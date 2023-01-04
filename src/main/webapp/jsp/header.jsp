@@ -36,69 +36,71 @@
     boolean puzzleEnabled = PuzzleGameManager.checkEnabled();
 %>
 
-<nav class="navbar navbar-expand-md navbar-cd" id="header">
-    <div class="container-fluid">
+<% if (!login.getUserEntity().isExternal()) { %>
+    <nav class="navbar navbar-expand-md navbar-cd" id="header">
+        <div class="container-fluid">
 
-        <a class="navbar-brand" href="${pageContext.request.contextPath}">
-            <img src="${pageContext.request.contextPath}/images/logo.png" alt="" class="d-inline-block"
-                 <%-- Negative margin to prevent the navbar from getting tall from the tall image. --%>
-                 style="height: 2.5rem; margin: -2rem .25rem -1.7rem .2rem;" />
-            Code Defenders
-        </a>
+            <a class="navbar-brand" href="${pageContext.request.contextPath}">
+                <img src="${pageContext.request.contextPath}/images/logo.png" alt="" class="d-inline-block"
+                     <%-- Negative margin to prevent the navbar from getting tall from the tall image. --%>
+                     style="height: 2.5rem; margin: -2rem .25rem -1.7rem .2rem;" />
+                Code Defenders
+            </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#header-navbar-controls"
-                aria-controls="header-navbar-controls" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#header-navbar-controls"
+                    aria-controls="header-navbar-controls" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-        <div class="collapse navbar-collapse" id="header-navbar-controls">
+            <div class="collapse navbar-collapse" id="header-navbar-controls">
 
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item nav-item-highlight dropdown me-3">
-                    <a class="nav-link dropdown-toggle" id="header-multiplayer" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Multiplayer
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="header-multiplayer">
-                        <li><a class="dropdown-item" id="header-games" href="${pageContext.request.contextPath}${Paths.GAMES_OVERVIEW}">Games</a></li>
-                        <li><a class="dropdown-item" id="header-games-history" href="${pageContext.request.contextPath}${Paths.GAMES_HISTORY}">History</a></li>
-                        <li><a class="dropdown-item" id="header-leaderboard" href="${pageContext.request.contextPath}${Paths.LEADERBOARD_PAGE}">Leaderboard</a></li>
-                    </ul>
-                </li>
-                <% if (puzzleEnabled) { %>
-                <li class="nav-item nav-item-highlight me-3">
-                    <a class="nav-link" id="header-puzzle" href="${pageContext.request.contextPath}${Paths.PUZZLE_OVERVIEW}">Puzzles</a>
-                </li>
-                <% } %>
-                <c:if test="${auth.admin}">
-                    <li class="nav-item nav-item-highlight me-3">
-                        <a class="nav-link" id="header-admin" href="${pageContext.request.contextPath}/admin">Admin</a>
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item nav-item-highlight dropdown me-3">
+                        <a class="nav-link dropdown-toggle" id="header-multiplayer" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Multiplayer
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="header-multiplayer">
+                            <li><a class="dropdown-item" id="header-games" href="${pageContext.request.contextPath}${Paths.GAMES_OVERVIEW}">Games</a></li>
+                            <li><a class="dropdown-item" id="header-games-history" href="${pageContext.request.contextPath}${Paths.GAMES_HISTORY}">History</a></li>
+                            <li><a class="dropdown-item" id="header-leaderboard" href="${pageContext.request.contextPath}${Paths.LEADERBOARD_PAGE}">Leaderboard</a></li>
+                        </ul>
                     </li>
-                </c:if>
-            </ul>
+                    <% if (puzzleEnabled) { %>
+                    <li class="nav-item nav-item-highlight me-3">
+                        <a class="nav-link" id="header-puzzle" href="${pageContext.request.contextPath}${Paths.PUZZLE_OVERVIEW}">Puzzles</a>
+                    </li>
+                    <% } %>
+                    <c:if test="${auth.admin}">
+                        <li class="nav-item nav-item-highlight me-3">
+                            <a class="nav-link" id="header-admin" href="${pageContext.request.contextPath}/admin">Admin</a>
+                        </li>
+                    </c:if>
+                </ul>
 
-            <ul class="navbar-nav">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" id="header-user" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        ${auth.simpleUser.name}
-                    </a>
-                    <ul class="dropdown-menu" id="user-dropdown" aria-labelledby="header-user"
-                        <%-- Align dropdown menu to the right, so it doesn't get cut off. --%>
-                        style="left: auto; right: 0;">
-                        <% if (profileEnabled) { %>
-                            <li><a class="dropdown-item" id="header-profile" href="${pageContext.request.contextPath}${Paths.USER_PROFILE}">Profile</a></li>
-                        <% } %>
-                        <% if (accountEnabled) { %>
-                            <li><a class="dropdown-item" id="header-account" href="${pageContext.request.contextPath}${Paths.USER_SETTINGS}">Account</a></li>
-                        <% } %>
-                        <li><a class="dropdown-item" id="header-help" href="${pageContext.request.contextPath}${Paths.HELP_PAGE}">Help</a></li>
-                        <li><a class="dropdown-item" id="header-logout" href="${pageContext.request.contextPath}${Paths.LOGOUT}">Logout</a></li>
-                    </ul>
-                </li>
-            </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="header-user" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            ${auth.simpleUser.name}
+                        </a>
+                        <ul class="dropdown-menu" id="user-dropdown" aria-labelledby="header-user"
+                            <%-- Align dropdown menu to the right, so it doesn't get cut off. --%>
+                            style="left: auto; right: 0;">
+                            <% if (profileEnabled) { %>
+                                <li><a class="dropdown-item" id="header-profile" href="${pageContext.request.contextPath}${Paths.USER_PROFILE}">Profile</a></li>
+                            <% } %>
+                            <% if (accountEnabled) { %>
+                                <li><a class="dropdown-item" id="header-account" href="${pageContext.request.contextPath}${Paths.USER_SETTINGS}">Account</a></li>
+                            <% } %>
+                            <li><a class="dropdown-item" id="header-help" href="${pageContext.request.contextPath}${Paths.HELP_PAGE}">Help</a></li>
+                            <li><a class="dropdown-item" id="header-logout" href="${pageContext.request.contextPath}${Paths.LOGOUT}">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
 
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
+<% } %>
 
 <jsp:include page="/jsp/game_components/progress_bar_common.jsp"/>
 <jsp:include page="/jsp/messages.jsp"/>
