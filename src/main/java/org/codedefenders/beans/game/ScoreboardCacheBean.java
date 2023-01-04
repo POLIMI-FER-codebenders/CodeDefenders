@@ -151,8 +151,6 @@ public class ScoreboardCacheBean {
 
     public String updateMultiplayerScoreboard(MultiplayerGame game) {
         MultiplayerScoreboard newScoreboard = getMultiplayerScoreboard(game);
-        System.out.println(new Gson().toJson(newScoreboard));
-        System.out.println(newScoreboard != scoreboards.get(game.getId()));
         if (newScoreboard != scoreboards.get(game.getId())) {
             scoreboards.put(game.getId(), newScoreboard);
             return new Gson().toJson(newScoreboard);
