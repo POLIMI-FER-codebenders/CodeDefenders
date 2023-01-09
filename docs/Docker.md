@@ -1,7 +1,5 @@
 # Docker
 
-Images for that custom version are on our .
-
 This CodeDefenders version can be easily deployed and run using Docker!
 
 ## How to deploy
@@ -33,13 +31,12 @@ To create an admin account follow these steps:
 - run CodeDefenders
 - using CodeDefenders user interface register a new account. The new account MUST have username equal to the value of `CODEDEFENDERS_ADMIN_USERNAME` variable
 
-You have now registered your admin account. If you log in with the chosen credentials you'll be able to access the admin interface.
+You have now registered your admin account.
 
-To obtain the admin token of the admin account just created you need to directly access CodeDefenders database. You can do it in the docker container called "database-1". In this container run a select query to get from the table "users" the column "token" for the row with "username" equal to your admin username. For example if your admin username is "admin" the query will look like:
-```
-mysql ${MYSQL_DATABASE} --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} --execute "SELECT Token FROM users WHERE username='admin';"
-```
-The string obtained in this way is your admin token.
+To obtain the admin token of the account just created:
+- Log into CodeDefenders using the admin credentials of the just created account
+- On the top right of the page click on your username and select "profile" section from the dropdown menu
+- At the bottom of the profile page you can see the admin token next to the entry "Your API token"
 
 ## Persistence
 
