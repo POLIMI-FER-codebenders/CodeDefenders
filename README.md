@@ -6,7 +6,7 @@ This repository contains a version of CodeDefenders updated with:
 - API to manage users and games
 - API to let bots play CodeDefenders and get data to be trained
 
-A formal specification of the APIs is available in [this document](/docs/openapi.json), while a simple script to test them (specific to the ones for bot games, but easy to extend to all) is available [here](/docs/CDBot.zip)
+A formal specification of the APIs is available in [this document](/docs/openapi.json), while a simple script to test them (specific to the ones for bot games, but easy to extend to all) is available [here](/docs/CDBot.zip).
 
 This CodeDefenders version has been developed by a team of POLIMI and FER students for the Distributed Software Development course and the SCORE competition. Together with this version we developed a [Tournament Application](https://github.com/POLIMI-FER-codebenders/tournament_app) for CodeDefenders.
 
