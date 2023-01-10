@@ -73,7 +73,7 @@ public class HistoryAPI extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<GameClass> classes = GameClassDAO.getAllPlayableClasses();
+        List<GameClass> classes = GameClassDAO.getAllPlayableClassesAlsoExternal();
         List<KillMap.KillMapEntry> killMaps = classes.stream().flatMap(c -> KillmapDAO.getKillMapEntriesForClass(c.getId()).stream()).collect(Collectors.toList());
         Map<Integer, String> mutantCodes = new HashMap<>(killMaps.stream().collect(Collectors.toMap(k -> k.mutant.getId(), k -> k.mutant.getPatchString(), (dup1, dup2) -> dup1)));
         Map<Integer, String> testCodes = new HashMap<>(killMaps.stream().collect(Collectors.toMap(k -> k.test.getId(), k -> k.test.getAsString(), (dup1, dup2) -> dup1)));
