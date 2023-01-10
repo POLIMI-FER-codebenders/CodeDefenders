@@ -163,9 +163,13 @@ public class GameClassDAO {
      * @return all game classes.
      */
     public static List<GameClass> getAllPlayableClasses() {
+        return getAllPlayableClassesAlsoExternal().stream().filter(c -> c.getAlias().matches("^[a-zA-Z0-9]*$")).collect(Collectors.toList());
+    }
+
+    public static List<GameClass> getAllPlayableClassesAlsoExternal() {
         String query = "SELECT * FROM view_playable_classes;";
 
-        return DB.executeQueryReturnList(query, GameClassDAO::gameClassFromRS).stream().filter(c -> c.getAlias().matches("^[a-zA-Z0-9]*$")).collect(Collectors.toList());
+        return DB.executeQueryReturnList(query, GameClassDAO::gameClassFromRS);
     }
 
     /**
