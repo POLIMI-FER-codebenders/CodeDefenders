@@ -99,10 +99,11 @@ public class UserRepository {
         boolean active = rs.getBoolean("Active");
         boolean allowContact = rs.getBoolean("AllowContact");
         KeyMap keyMap = KeyMap.valueOrDefault(rs.getString("KeyMap"));
-        String token = rs.getString("Token");
+        String apiToken = rs.getString("API_Token");
+        String frontendToken = rs.getString("Frontend_Token");
         boolean external = rs.getBoolean("External");
 
-        return new UserEntity(userId, userName, password, email, validated, active, allowContact, keyMap, token, external);
+        return new UserEntity(userId, userName, password, email, validated, active, allowContact, keyMap, apiToken, frontendToken, external);
     }
 
     /**
@@ -123,8 +124,8 @@ public class UserRepository {
             throw new IllegalArgumentException("Can't insert user with id > 0");
         }
         String query = "INSERT INTO users "
-                + "(Username, Password, Email, Validated, Active, AllowContact, KeyMap, Token, External) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                + "(Username, Password, Email, Validated, Active, AllowContact, KeyMap, API_Token, Frontend_Token, External) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
         try {
             return queryRunner
                     .insert(query, resultSet -> nextFromRS(resultSet, rs -> rs.getInt(1)),
@@ -135,7 +136,8 @@ public class UserRepository {
                             userEntity.isActive(),
                             userEntity.getAllowContact(),
                             userEntity.getKeyMap().name(),
-                            userEntity.getToken(),
+                            userEntity.getApiToken(),
+                            userEntity.getFrontendToken(),
                             userEntity.isExternal());
         } catch (SQLException e) {
             logger.error("SQLException while executing query", e);
@@ -158,7 +160,8 @@ public class UserRepository {
                 + "  Active = ?, "
                 + "  AllowContact = ?, "
                 + "  KeyMap = ?, "
-                + "  Token = ? "
+                + "  API_Token = ?, "
+                + "  Frontend_Token = ? "
                 + "WHERE User_ID = ?;";
         try {
             return queryRunner.update(query,
@@ -169,7 +172,8 @@ public class UserRepository {
                     userEntity.isActive(),
                     userEntity.getAllowContact(),
                     userEntity.getKeyMap().name(),
-                    userEntity.getToken(),
+                    userEntity.getApiToken(),
+                    userEntity.getFrontendToken(),
                     userEntity.getId()) == 1;
         } catch (SQLException e) {
             logger.error("SQLException while executing query", e);
@@ -230,12 +234,31 @@ public class UserRepository {
 
     @Nonnull
     public Optional<UserEntity> getUserByToken(@Nonnull String token) {
+        return Optional.ofNullable(getUserByApiToken(token).orElse(getUserByFrontendToken(token).orElse(null)));
+    }
+
+    @Nonnull
+    public Optional<UserEntity> getUserByApiToken(@Nonnull String apiToken) {
         String query = "SELECT * "
                 + "FROM  users "
-                + "WHERE Token = ?;";
+                + "WHERE API_Token = ?;";
         try {
             return queryRunner
-                    .query(query, resultSet -> oneFromRS(resultSet, UserRepository::userFromRS), token);
+                    .query(query, resultSet -> oneFromRS(resultSet, UserRepository::userFromRS), apiToken);
+        } catch (SQLException e) {
+            logger.error("SQLException while executing query", e);
+            throw new UncheckedSQLException("SQLException while executing query", e);
+        }
+    }
+
+    @Nonnull
+    public Optional<UserEntity> getUserByFrontendToken(@Nonnull String frontendToken) {
+        String query = "SELECT * "
+                + "FROM  users "
+                + "WHERE Frontend_Token = ?;";
+        try {
+            return queryRunner
+                    .query(query, resultSet -> oneFromRS(resultSet, UserRepository::userFromRS), frontendToken);
         } catch (SQLException e) {
             logger.error("SQLException while executing query", e);
             throw new UncheckedSQLException("SQLException while executing query", e);
@@ -324,8 +347,7 @@ public class UserRepository {
         return token;
     }
 
-    private static String generateToken()
-    {
+    private static String generateToken() {
         SecureRandom secureRandom = new SecureRandom();
         byte[] randomBytes = new byte[24];
         secureRandom.nextBytes(randomBytes);

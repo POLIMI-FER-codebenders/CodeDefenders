@@ -52,8 +52,8 @@ import org.codedefenders.persistence.database.SettingsRepository;
 import org.codedefenders.persistence.database.UserRepository;
 import org.codedefenders.service.UserService;
 import org.codedefenders.service.game.GameService;
-import org.codedefenders.servlets.util.APITransformers;
-import org.codedefenders.servlets.util.APIUtils;
+import org.codedefenders.servlets.util.api.Transformers;
+import org.codedefenders.servlets.util.api.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,29 +91,29 @@ public class NewGameAPI extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final NewGameRequest game;
         try {
-            game = (NewGameRequest) APIUtils.parsePostOrRespondJsonError(request, response, NewGameRequest.class);
+            game = (NewGameRequest) Utils.parsePostOrRespondJsonError(request, response, NewGameRequest.class);
         } catch (JsonParseException e) {
             return;
         }
         if (GameClassDAO.getClassForId(game.getClassId()) == null) {
-            APIUtils.respondJsonError(response, "Class with ID " + game.getClassId() + " not found", HttpServletResponse.SC_NOT_FOUND);
+            Utils.respondJsonError(response, "Class with ID " + game.getClassId() + " not found", HttpServletResponse.SC_NOT_FOUND);
         } else if (game.getTeams().size() != 2) {
-            APIUtils.respondJsonError(response, game.getTeams().size() + " teams specified, expected 2", HttpServletResponse.SC_BAD_REQUEST);
+            Utils.respondJsonError(response, game.getTeams().size() + " teams specified, expected 2", HttpServletResponse.SC_BAD_REQUEST);
         } else if (game.getTeams().stream().anyMatch(t -> t.getUserIds().isEmpty())) {
-            APIUtils.respondJsonError(response, "Teams must not be empty", HttpServletResponse.SC_BAD_REQUEST);
+            Utils.respondJsonError(response, "Teams must not be empty", HttpServletResponse.SC_BAD_REQUEST);
         } else if (game.getSettings().getGameType().equals(StagedGameList.GameSettings.GameType.MELEE) &&
                 !game.getTeams().stream().allMatch(t -> t.getRole().equals(Role.PLAYER))) {
-            APIUtils.respondJsonError(response, "All teams must have the player role for melee match", HttpServletResponse.SC_BAD_REQUEST);
+            Utils.respondJsonError(response, "All teams must have the player role for melee match", HttpServletResponse.SC_BAD_REQUEST);
         } else if (game.getSettings().getGameType().equals(StagedGameList.GameSettings.GameType.MULTIPLAYER) &&
                 (game.getTeams().stream().noneMatch(t -> t.getRole().equals(org.codedefenders.game.Role.ATTACKER)) ||
                         game.getTeams().stream().noneMatch(t -> t.getRole().equals(org.codedefenders.game.Role.DEFENDER)))) {
-            APIUtils.respondJsonError(response, "Need one attacker team and one defender team for battleground match", HttpServletResponse.SC_BAD_REQUEST);
+            Utils.respondJsonError(response, "Need one attacker team and one defender team for battleground match", HttpServletResponse.SC_BAD_REQUEST);
         } else if (game.getTeams().get(0).getUserIds().stream().anyMatch(game.getTeams().get(1).getUserIds()::contains)) {
-            APIUtils.respondJsonError(response, "Teams must be disjointed", HttpServletResponse.SC_BAD_REQUEST);
+            Utils.respondJsonError(response, "Teams must be disjointed", HttpServletResponse.SC_BAD_REQUEST);
         } else {
             synchronized (adminCreateGamesBean.getSynchronizer()) {
                 adminCreateGamesBean.update();
-                adminCreateGamesBean.stageEmptyGames(APITransformers.NewGameRequestToGameSettings(game), 1);
+                adminCreateGamesBean.stageEmptyGames(Transformers.NewGameRequestToGameSettings(game), 1);
                 Map<Integer, StagedGameList.StagedGame> stagedGames = adminCreateGamesBean.getStagedGameList().getStagedGames();
                 StagedGameList.StagedGame stagedGame = stagedGames.get(new ArrayList<>(stagedGames.keySet()).get(stagedGames.size() - 1));
                 try {
@@ -143,10 +143,10 @@ public class NewGameAPI extends HttpServlet {
                         out.print(new Gson().toJson(Collections.singletonMap("gameId", newGameId.get(0))));
                         out.flush();
                     } else {
-                        APIUtils.respondJsonError(response, "Expected to create 1 game, created " + newGameId.size());
+                        Utils.respondJsonError(response, "Expected to create 1 game, created " + newGameId.size());
                     }
                 } catch (NoSuchElementException e) {
-                    APIUtils.respondJsonError(response, e.getMessage(), HttpServletResponse.SC_NOT_FOUND);
+                    Utils.respondJsonError(response, e.getMessage(), HttpServletResponse.SC_NOT_FOUND);
                 }
             }
         }

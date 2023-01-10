@@ -19,23 +19,29 @@
 
 package org.codedefenders.auth;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.apache.catalina.User;
 import org.apache.catalina.UserDatabase;
-import org.apache.shiro.authc.*;
+import org.apache.shiro.authc.Account;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.BearerToken;
+import org.apache.shiro.authc.SimpleAccount;
 import org.apache.shiro.authc.credential.AllowAllCredentialsMatcher;
 import org.apache.shiro.realm.AuthenticatingRealm;
 import org.codedefenders.configuration.Configuration;
 import org.codedefenders.model.UserEntity;
 import org.codedefenders.persistence.database.SettingsRepository;
 import org.codedefenders.persistence.database.UserRepository;
-import org.codedefenders.servlets.auth.CodeDefendersFormAuthenticationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,22 +52,19 @@ import org.slf4j.LoggerFactory;
  *
  * @author gambi
  */
-@Singleton
-public class CodeDefendersBearerHttpAuthenticatingRealm extends AuthenticatingRealm {
+public abstract class CodeDefendersBearerHttpAuthenticatingRealm extends AuthenticatingRealm {
 
     private static final Logger logger = LoggerFactory.getLogger(CodeDefendersRealm.class);
 
     private final String adminRole;
 
-    private final SettingsRepository settingsRepo;
-    private final UserRepository userRepo;
+    protected final SettingsRepository settingsRepo;
+    protected final UserRepository userRepo;
 
     private final UserDatabase userDatabase;
 
     @Inject
-    public CodeDefendersBearerHttpAuthenticatingRealm(CodeDefendersRealm.CodeDefendersCacheManager codeDefendersCacheManager,
-                                                      CodeDefendersRealm.CodeDefendersCredentialsMatcher codeDefendersCredentialsMatcher, SettingsRepository settingsRepo,
-                                                      UserRepository userRepo, @SuppressWarnings("CdiInjectionPointsInspection") Configuration config) {
+    public CodeDefendersBearerHttpAuthenticatingRealm(CodeDefendersRealm.CodeDefendersCacheManager codeDefendersCacheManager, CodeDefendersRealm.CodeDefendersCredentialsMatcher codeDefendersCredentialsMatcher, SettingsRepository settingsRepo, UserRepository userRepo, @SuppressWarnings("CdiInjectionPointsInspection") Configuration config) {
         super(codeDefendersCacheManager, codeDefendersCredentialsMatcher);
         this.settingsRepo = settingsRepo;
         this.userRepo = userRepo;
@@ -75,7 +78,6 @@ public class CodeDefendersBearerHttpAuthenticatingRealm extends AuthenticatingRe
         }
         this.userDatabase = userDatabase;
         this.adminRole = config.getAuthAdminRole();
-        setAuthenticationTokenClass(BearerToken.class);
         setCredentialsMatcher(new AllowAllCredentialsMatcher());
     }
 
@@ -88,7 +90,7 @@ public class CodeDefendersBearerHttpAuthenticatingRealm extends AuthenticatingRe
         roles.add("user");
 
         User tomcatUser = userDatabase.findUser(userEntity.getUsername());
-        if (tomcatUser!=null && tomcatUser.isInRole(userDatabase.findRole(adminRole))) {
+        if (tomcatUser != null && tomcatUser.isInRole(userDatabase.findRole(adminRole))) {
             roles.add("admin");
         }
 
@@ -102,21 +104,5 @@ public class CodeDefendersBearerHttpAuthenticatingRealm extends AuthenticatingRe
         return checkToken(bearerToken.getToken());
     }
 
-    public Account checkToken(String token) {
-        Optional<UserEntity> activeUser = userRepo.getUserByToken(token);
-
-        if (!activeUser.isPresent()) {
-            throw new IncorrectCredentialsException("Invalid token");
-        }
-
-        if (settingsRepo.isMailValidationRequired() && !activeUser.get().isValidated()) {
-            throw new LockedAccountException("Account email is not validated.");
-        }
-
-        if (!activeUser.get().isActive()) {
-            throw new LockedAccountException("Your account is inactive, login is only possible with an active account.");
-        }
-
-        return getAccount(activeUser.get());
-    }
+    public abstract Account checkToken(String token);
 }

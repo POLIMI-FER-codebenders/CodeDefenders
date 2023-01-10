@@ -297,6 +297,15 @@ public class MeleeGameDAO {
                 DatabaseValue.of(GameState.FINISHED.name()));
     }
 
+    public static List<MeleeGame> getFinishedMeleeGames() {
+        String query = String.join("\n",
+                "SELECT *",
+                "FROM view_melee_games",
+                "WHERE State = ?;");
+        return DB.executeQueryReturnList(query, MeleeGameDAO::meleeGameFromRS,
+                DatabaseValue.of(GameState.FINISHED.name()));
+    }
+
     /**
      * Retrieves a list of all {@link UserMeleeGameInfo UserMeleeGameInfos} for
      * games which are joinable for a given user identifier.

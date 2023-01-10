@@ -1,6 +1,16 @@
 # Code Defenders
 
-This is Code Defenders, a mutation testing game. Publicly available at [code-defenders.org](<http://code-defenders.org>).
+This is Code Defenders, a mutation testing game.
+
+This repository contains a version of CodeDefenders updated with:
+- API to manage users and games
+- API to let bots play CodeDefenders and get data to be trained
+
+A formal specification of the APIs is available in [this document](/docs/openapi.json), while a simple script to test them (specific to the ones for bot games, but easy to extend to all) is available [here](/docs/CDBot.zip).
+
+This CodeDefenders version has been developed by a team of POLIMI and FER students for the Distributed Software Development course and the SCORE competition. Together with this version we developed a [Tournament Application](https://github.com/POLIMI-FER-codebenders/tournament_app) for CodeDefenders.
+
+If you are looking for the original CodeDefenders game you can find it in [this repository](https://github.com/CodeDefenders/CodeDefenders) or play it at [code-defenders.org](<http://code-defenders.org>).
 
 For information regarding running Code Defenders via docker see [the corresponding documentation](docs/Docker.md).
 

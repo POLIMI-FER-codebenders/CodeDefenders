@@ -120,6 +120,16 @@ public final class ServletUtils {
         });
     }
 
+    public static Optional<Long> getLongParameter(HttpServletRequest request, String parameter) {
+        return Optional.ofNullable(request.getParameter(parameter)).map(s -> {
+            try {
+                return Long.parseLong(s);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        });
+    }
+
     /**
      * Extracts a given float URL parameter from a given request.
      *

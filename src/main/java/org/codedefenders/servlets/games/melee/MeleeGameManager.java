@@ -310,7 +310,7 @@ public class MeleeGameManager extends HttpServlet {
     }
 
     // This is package protected to enable testing
-    void triggerAutomaticMutantEquivalenceForGame(MeleeGame game) {
+    public void triggerAutomaticMutantEquivalenceForGame(MeleeGame game) {
         int threshold = game.getAutomaticMutantEquivalenceThreshold();
         if (threshold < 1) {
             // No need to check as this feature is disabled

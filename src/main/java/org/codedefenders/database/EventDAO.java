@@ -9,17 +9,22 @@ import java.util.List;
 
 import javax.annotation.ManagedBean;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
+import org.codedefenders.beans.game.ScoreboardCacheBean;
 import org.codedefenders.game.Role;
 import org.codedefenders.model.Event;
 import org.codedefenders.model.EventStatus;
 import org.codedefenders.model.EventType;
+import org.slf4j.LoggerFactory;
 
 // TODO Probably this should expose some specific functions, like handleChatEvent, handle gameEvent, and the like
 @ApplicationScoped
 @ManagedBean
 public class EventDAO {
 
+    @Inject
+    ScoreboardCacheBean scoreboardCacheBean;
     /**
      * @param gameId The gameId for which to remove the events.
      * @param userId The userId of the events to remove.
@@ -77,7 +82,7 @@ public class EventDAO {
         final PreparedStatement stmt1 = DB.createPreparedStatement(conn1, query, valueList);
         // The execute* returns the Connection to the ConnectionPool so we must not reuse it
         int eventId = DB.executeUpdateGetKeys(stmt1, conn1);
-
+        scoreboardCacheBean.updateScoreboard(eventId,event.gameId());
         return eventId >= 0;
     }
 
@@ -116,6 +121,20 @@ public class EventDAO {
         // TODO Use SOME VIEW INSTEAD OF EVENT TABLE?
         String query = String.join("\n", "SELECT * from events", "WHERE Game_ID=?");
         DatabaseValue<?>[] values = new DatabaseValue[]{DatabaseValue.of(gameId)};
+        return DB.executeQueryReturnList(query, EventDAO::eventFromRS, values);
+    }
+
+    public static List<Event> getEventsForAllGamesWithCreatorAndAfter(Integer creatorId, Long startTime) {
+        String query = String.join("\n", "SELECT e.*",
+                "FROM events e",
+                "JOIN games g ON",
+                "    e.Game_ID = g.ID",
+                "WHERE",
+                "    e.Event_Status = \"GAME\" AND",
+                "    e.Player_ID != 3 AND e.Player_ID != 4 AND",
+                "    g.External IS NOT NULL AND g.Creator_ID = ? AND e.Timestamp > FROM_UNIXTIME(?)",
+                "LIMIT 501");
+        DatabaseValue<?>[] values = new DatabaseValue[] {DatabaseValue.of(creatorId), DatabaseValue.of(startTime)};
         return DB.executeQueryReturnList(query, EventDAO::eventFromRS, values);
     }
 

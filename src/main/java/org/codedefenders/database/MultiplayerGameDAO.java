@@ -297,6 +297,17 @@ public class MultiplayerGameDAO {
         return DB.executeQueryReturnList(query, MultiplayerGameDAO::multiplayerGameFromRS, values);
     }
 
+    public static List<MultiplayerGame> getFinishedMultiplayerGames() {
+        String query = String.join("\n",
+                "SELECT *",
+                "FROM view_battleground_games",
+                "WHERE State = ?;");
+        DatabaseValue<?>[] values = new DatabaseValue[]{
+                DatabaseValue.of(GameState.FINISHED.name())
+        };
+        return DB.executeQueryReturnList(query, MultiplayerGameDAO::multiplayerGameFromRS, values);
+    }
+
     /**
      * Retrieves a list of all {@link UserMultiplayerGameInfo UserMultiplayerGameInfos} for games which are joinable
      * for a given user identifier.

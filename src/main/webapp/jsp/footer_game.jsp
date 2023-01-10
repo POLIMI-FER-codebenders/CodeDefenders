@@ -26,6 +26,7 @@
 
 <script type="module">
     import {objects} from './js/codedefenders_main.mjs';
+    import $ from './js/jquery.mjs';
 
     (async function () {
         /** @type {PushSocket} */
@@ -44,6 +45,17 @@
         socket.register('game.GameStartedEvent', event => {
             console.log('Game with Id ' + event.gameId + ' was started.');
             window.location.reload();
+        });
+
+        socket.register('game.GameGraceOneEvent', event => {
+            console.log('Game with Id ' + event.gameId + ' entered grace one.');
+            $(".btn.btn-attacker.btn-highlight").prop("disabled",true);
+            $(".btn.btn-defender.btn-highlight").prop("disabled",true);
+        });
+
+        socket.register('game.GameGraceTwoEvent', event => {
+            console.log('Game with Id ' + event.gameId + ' entered grace two.');
+            $('form[id="equiv"]').remove();
         });
     })();
 </script>

@@ -70,10 +70,11 @@ public class PlayerDAO {
         boolean userActive = rs.getBoolean("usersActive");
         boolean allowContact = rs.getBoolean("usersAllowContact");
         KeyMap keyMap = KeyMap.valueOrDefault(rs.getString("usersKeyMap"));
-        String token = rs.getString("usersToken");
+        String apiToken = rs.getString("usersApiToken");
+        String frontendToken = rs.getString("usersFrontendToken");
         boolean external = rs.getBoolean("usersExternal");
 
-        final UserEntity user = new UserEntity(userId, userName, password, email, validated, userActive, allowContact, keyMap, token, external);
+        final UserEntity user = new UserEntity(userId, userName, password, email, validated, userActive, allowContact, keyMap, apiToken, frontendToken, external);
 
         return new Player(id, user, gameId, points, role, active);
     }
